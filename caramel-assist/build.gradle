@@ -1,0 +1,13 @@
+archivesBaseName = 'caramel-assist'
+
+dependencies {
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-assist'
+    PUBLISHED_ARTIFACT_ID = 'caramel-assist'
+    PROJECT_DESCRIPTION = 'Caramel Assist'
+}
+
+//apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'
+apply from: '../bintray-upload-normal.gradle'

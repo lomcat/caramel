@@ -1,0 +1,20 @@
+archivesBaseName = 'caramel-config'
+
+dependencies {
+    api project(':caramel-assist')
+
+    implementation 'com.typesafe:config:1.4.0'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+
+    implementation 'org.springframework:spring-core:5.2.8.RELEASE'
+    implementation 'org.springframework:spring-beans:5.2.8.RELEASE'
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-config'
+    PUBLISHED_ARTIFACT_ID = 'caramel-config'
+    PROJECT_DESCRIPTION = 'Caramel Config'
+}
+
+//apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'
+apply from: '../bintray-upload-normal.gradle'

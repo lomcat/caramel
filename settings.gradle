@@ -1,2 +1,4 @@
 rootProject.name = 'caramel'
+include 'caramel-config'
+include 'caramel-assist'
 
