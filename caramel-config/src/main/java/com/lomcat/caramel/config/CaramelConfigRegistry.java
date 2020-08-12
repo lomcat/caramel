@@ -94,7 +94,7 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
         this.positions = positions;
     }
 
-    /** called by {@link #afterPropertiesSet()} */
+    /** 加载配置数据，由 Spring 的 Bean 初始化方法 {@link #afterPropertiesSet()} 调用 */
     private void load() {
         Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(locations, positions);
         if (CaramelAide.isEmpty(resourceMap)) {
