@@ -73,6 +73,27 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
         return Collections.unmodifiableMap(configHolder);
     }
 
+    /**
+     * 设置配置文件路径集合，格式为 [path/]name[.extension]，其中 path 和 extension 部分可选，
+     * 运行时会被转换为 {@link CaramelConfigPosition}，并使用 <code>name</code> 作为 key。
+     *
+     * @param locations 路径集合
+     * @see #setPositions(CaramelConfigPosition[])
+     */
+    public void setLocations(String[] locations) {
+        this.locations = locations;
+    }
+
+    /**
+     * 设置配置文件位置描述集合
+     *
+     * @param positions 配置文件位置描述集合
+     * @see #setLocations(String[])
+     */
+    public void setPositions(CaramelConfigPosition[] positions) {
+        this.positions = positions;
+    }
+
     /** called by {@link #afterPropertiesSet()} */
     private void load() {
         Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(locations, positions);
@@ -106,13 +127,5 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
         configHolder.clear();
         locations = null;
         positions = null;
-    }
-
-    public void setLocations(String[] locations) {
-        this.locations = locations;
-    }
-
-    public void setPositions(CaramelConfigPosition[] positions) {
-        this.positions = positions;
     }
 }
