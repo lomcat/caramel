@@ -1,16 +1,85 @@
-plugins {
-    id 'java'
-}
+// 子模块通用配置
+allprojects {
+    buildscript {
+        repositories {
+            maven { url "https://dl.bintray.com/lomcat/maven/" }
+            maven { url "https://dl.bintray.com/lomcat/maven-test/" }
+            maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+            jcenter()
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        }
+    }
 
-group 'com.lomcat.caramel'
-version '0.0.1'
+    repositories {
+        maven { url "https://dl.bintray.com/lomcat/maven/" }
+        maven { url "https://dl.bintray.com/lomcat/maven-test/" }
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        jcenter()
+        mavenCentral()
+    }
 
-sourceCompatibility = 1.8
+    apply plugin: 'java-library'
+    apply plugin: 'idea'
 
-repositories {
-    mavenCentral()
-}
+    sourceCompatibility = 8
+    targetCompatibility = 8
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+    group 'com.lomcat.caramel'
+    version = '0.0.1'
+
+    configurations {
+//        developmentOnly
+//        runtimeClasspath {
+//            extendsFrom developmentOnly
+//        }
+    }
+
+    dependencies {
+        implementation group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
+
+        testImplementation group: 'junit', name: 'junit', version: '4.12'
+    }
+
+    ext {
+        buildTime = {
+            return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
+        }
+
+        BINTRAY_REPO = 'maven-test'
+        BINTRAY_NAME = 'caramel'
+        BINTRAY_PUBLISH = true
+        BINTRAY_OVERRIDE = false
+        BINTRAY_DRY_RUN = false
+
+        PUBLISHED_PACKAGING = 'jar'
+        PUBLISHED_GROUP_ID = 'com.lomcat.caramel'
+        PUBLISHED_ARTIFACT_ID = 'caramel'
+        PUBLISHED_VERSION = rootProject.version
+        PUBLISHED_VCS_TAG = rootProject.version
+
+        PROJECT_NAME = 'Caramel'
+        PROJECT_DESCRIPTION = 'Carefree Framework Library'
+        PROJECT_LABELS = ['Caramel', 'Spring', 'SpringBoot']
+        PROJECT_WEBSITE_URL = 'https://github.com/lomcat/caramel'
+        PROJECT_VCS_URL = 'https://github.com/lomcat/caramel.git'
+        PROJECT_ISSUE_TRACKER_URL = 'https://github.com/lomcat/caramel/issues'
+
+        DEVELOPER_ID = 'kweny'
+        DEVELOPER_NAME = 'Kweny'
+        DEVELOPER_EMAIL = 'iamkweny@gmail.com'
+
+        LICENSE_NAME = 'The Apache Software License, Version 2.0'
+        LICENSE_URL = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        LICENSE_DISTRIBUTION = 'rebo'
+        ALL_LICENSES = ["Apache-2.0"]
+
+        // mavenCentralSync
+        MCS_ENABLED = false
+        MCS_CLOSE = '0'
+    }
 }
