@@ -43,6 +43,10 @@ public class CaramelAide {
 
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
+    public static int length(final CharSequence cs) {
+        return cs == null ? 0 : cs.length();
+    }
+
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
     }

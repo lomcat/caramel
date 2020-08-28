@@ -1,6 +1,7 @@
 archivesBaseName = 'caramel-assist'
 
 dependencies {
+    implementation slf4jApi
 }
 
 ext {

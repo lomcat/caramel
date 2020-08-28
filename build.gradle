@@ -50,6 +50,11 @@ allprojects {
             return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
         }
 
+        // ----- dependency definitions -----
+        slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
+
+        // ----- publications -----
+
         BINTRAY_REPO = 'maven-test'
         BINTRAY_NAME = 'caramel'
         BINTRAY_PUBLISH = true
