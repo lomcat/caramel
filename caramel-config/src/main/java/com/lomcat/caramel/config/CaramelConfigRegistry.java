@@ -37,16 +37,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 0.0.1
  */
 public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
-    /**
-     * 配置文件路径集合，格式为 [path/]name[.extension]，其中 path 和 extension 部分可选，
-     * 运行时会被转换为 {@link CaramelConfigPosition}，并使用 <code>name</code> 作为 key。
-     */
-    private String[] locations;
-    /**
-     * 配置文件位置描述集合
-     */
-    private CaramelConfigPosition[] positions;
 
+    private CaramelConfigProperties properties;
     /** < key, 配置数据 > */
     private final Map<String, CaramelConfig> configHolder;
 
@@ -64,6 +56,14 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
         return configHolder.get(key);
     }
 
+    public CaramelConfigProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CaramelConfigProperties properties) {
+        this.properties = properties;
+    }
+
     /**
      * 获取所有的配置文件对象
      *
@@ -73,30 +73,9 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
         return Collections.unmodifiableMap(configHolder);
     }
 
-    /**
-     * 设置配置文件路径集合，格式为 [path/]name[.extension]，其中 path 和 extension 部分可选，
-     * 运行时会被转换为 {@link CaramelConfigPosition}，并使用 <code>name</code> 作为 key。
-     *
-     * @param locations 路径集合
-     * @see #setPositions(CaramelConfigPosition[])
-     */
-    public void setLocations(String[] locations) {
-        this.locations = locations;
-    }
-
-    /**
-     * 设置配置文件位置描述集合
-     *
-     * @param positions 配置文件位置描述集合
-     * @see #setLocations(String[])
-     */
-    public void setPositions(CaramelConfigPosition[] positions) {
-        this.positions = positions;
-    }
-
     /** 加载配置数据，由 Spring 的 Bean 初始化方法 {@link #afterPropertiesSet()} 调用 */
     private void load() {
-        Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(locations, positions);
+        Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(properties.getLocations(), properties.getPositions());
         if (CaramelAide.isEmpty(resourceMap)) {
             return;
         }
@@ -125,7 +104,6 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
     @Override
     public void destroy() {
         configHolder.clear();
-        locations = null;
-        positions = null;
+        properties = null;
     }
 }

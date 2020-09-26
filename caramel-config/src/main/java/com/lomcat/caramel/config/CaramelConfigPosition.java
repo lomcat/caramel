@@ -17,7 +17,7 @@
 package com.lomcat.caramel.config;
 
 /**
- * <h3>caramel 配置文件的位置描述</h3>
+ * <h3>Caramel 配置文件的位置描述</h3>
  *
  * <p>用于描述要引入的外部配置文件的所在位置。</p>
  *

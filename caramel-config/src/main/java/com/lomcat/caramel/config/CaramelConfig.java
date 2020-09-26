@@ -19,7 +19,7 @@ package com.lomcat.caramel.config;
 import com.typesafe.config.Config;
 
 /**
- * <h3>Caramel 配置数据</h3>
+ * <h3>Caramel 配置文件数据</h3>
  *
  * @author Kweny
  * @since 0.0.1
