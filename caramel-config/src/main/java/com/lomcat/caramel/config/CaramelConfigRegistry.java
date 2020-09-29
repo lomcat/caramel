@@ -18,7 +18,6 @@ package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.assist.CaramelLogger;
-import com.lomcat.caramel.config.option.CaramelConfigEcho;
 import com.lomcat.caramel.config.option.CaramelConfigProperties;
 import com.lomcat.caramel.exception.ConfigLoadException;
 import com.typesafe.config.Config;
@@ -94,10 +93,6 @@ public class CaramelConfigRegistry {
             return;
         }
 
-        String echoLevel = CaramelConfigEcho.LEVEL_NONE;
-        boolean isEchoMasking = false;
-        CaramelConfigEcho echo = properties.getEcho();
-
         resourceMap.forEach((key, resources) -> resources.forEach(resource -> {
             try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
                 Config config = ConfigFactory.parseReader(reader);
@@ -108,13 +103,15 @@ public class CaramelConfigRegistry {
                 } else {
                     caramelConfig.update(config);
                 }
-
-
-
             } catch (Exception e) {
                 throw new ConfigLoadException(String.format("[Caramel] config file read error: %s", resource), e);
             }
         }));
+
+        /*
+        TODO-Kweny 本地配置文件加载完成，触发监听器（如 echo打印、开始用云端配置覆盖本地配置 等）
+        监听器在 CaramelConfigRegistry 初始化时注册加载，可以考虑 注解扫描 和 代码add 两种方式
+        */
     }
 
     public void destroy() {
