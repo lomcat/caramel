@@ -32,7 +32,7 @@ public class CaramelConfig {
         this.config = config;
     }
 
-    void overwrite(Config newConfig) {
+    void update(Config newConfig) {
         newConfig.entrySet().forEach(entry -> config = config.withValue(entry.getKey(), entry.getValue()));
     }
 }

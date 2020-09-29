@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config;
+package com.lomcat.caramel.config.option;
 
 /**
  * <h3>Caramel 配置文件的位置描述</h3>
@@ -43,6 +43,10 @@ public class CaramelConfigPosition {
      * 配置文件的所在目录
      */
     private String path;
+    /**
+     * 配置文件优先级，相同 key 的配置文件中，优先级高的文件将覆盖优先级低的文件中的同名属性值
+     */
+    private int priority;
 
     @Override
     public String toString() {
@@ -84,5 +88,13 @@ public class CaramelConfigPosition {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

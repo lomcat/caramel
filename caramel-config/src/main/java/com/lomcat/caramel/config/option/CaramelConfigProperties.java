@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config;
+package com.lomcat.caramel.config.option;
 
 /**
  * <h3>Caramel 配置文件加载选项</h3>
@@ -28,8 +28,14 @@ public class CaramelConfigProperties {
      */
     private boolean enabled;
     /**
-     * 配置文件路径集合，格式为 [path/]name[.extension]，其中 path 和 extension 部分可选，
-     * 运行时会被转换为 {@link CaramelConfigPosition}，并使用 <code>name</code> 作为 key。
+     * 配置文件内容打印选项
+     */
+    private CaramelConfigEcho echo;
+    /**
+     * 配置文件路径集合，格式为 [$key:][path/]name[.extension]，
+     * 其中 $key、path、extension 部分可选，name 部分必须，
+     * 运行时会被转换为 {@link CaramelConfigPosition}。
+     * $key: 用于为该配置文件指定一个为标识，必须以 $ 号开头，以 : 号结束，若不指定则以 name 为唯一标识，不同配置文件可以指定一样的 key，同 key 的文件内容将合并。
      */
     private String[] locations;
     /**
@@ -37,12 +43,40 @@ public class CaramelConfigProperties {
      */
     private CaramelConfigPosition[] positions;
 
+    /**
+     * 返回是否启用了 Caramel 配置文件加载
+     *
+     * @return true-启用；false-禁用
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * 设置是否启用 Caramel 配置文件加载
+     *
+     * @param enabled true-启用；false-禁用
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * 返回配置文件内容打印选项
+     *
+     * @return 打印选项对象
+     */
+    public CaramelConfigEcho getEcho() {
+        return echo;
+    }
+
+    /**
+     * 设置配置文件内容打印选项
+     *
+     * @param echo 打印选项对象
+     */
+    public void setEcho(CaramelConfigEcho echo) {
+        this.echo = echo;
     }
 
     /**

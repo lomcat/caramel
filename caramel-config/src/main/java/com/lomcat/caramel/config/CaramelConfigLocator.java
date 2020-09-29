@@ -17,6 +17,7 @@
 package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
+import com.lomcat.caramel.config.option.CaramelConfigPosition;
 import com.lomcat.caramel.exception.ConfigLoadException;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -40,7 +41,7 @@ class CaramelConfigLocator {
     /** 配置文件约定目录，优先级递增，后面的配置将覆盖前面的（若后面配置中某个属性未指定则不会覆盖） */
     private static final String[] DEFAULT_PATHS = {"classpath:/", "classpath:/config/", "file:./", "file:./config/"};
     /** 配置文件约定类型，优先级递增，后面的配置将覆盖前面的（若后面配置中某个属性未指定则不会覆盖） */
-    private static final String[] DEFAULT_TYPES = {".properties", ".json", ".conf"};
+    private static final String[] DEFAULT_TYPES = {"", ".properties", ".json", ".conf"};
 
     static Map<String, List<Resource>> locate(String[] locations, CaramelConfigPosition[] positions) {
         return resolveConfigResources(resolveConfigPositions(locations, positions));
@@ -162,10 +163,13 @@ class CaramelConfigLocator {
 
             pathBuilder.append(name);
 
-            if (!extension.startsWith(NAME_SEPARATOR)) {
-                pathBuilder.append(NAME_SEPARATOR);
+            // 约定扩展名中的 ""（空串，无扩展名）无需 append
+            if (!"".equals(extension)) {
+                if (!extension.startsWith(NAME_SEPARATOR)) {
+                    pathBuilder.append(NAME_SEPARATOR);
+                }
+                pathBuilder.append(extension);
             }
-            pathBuilder.append(extension);
 
             Resource resource = resourceLoader.getResource(pathBuilder.toString());
             if (resource.exists()) {

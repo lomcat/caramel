@@ -17,11 +17,12 @@
 package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
+import com.lomcat.caramel.assist.CaramelLogger;
+import com.lomcat.caramel.config.option.CaramelConfigEcho;
+import com.lomcat.caramel.config.option.CaramelConfigProperties;
 import com.lomcat.caramel.exception.ConfigLoadException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStreamReader;
@@ -36,7 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Kweny
  * @since 0.0.1
  */
-public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
+public class CaramelConfigRegistry {
+
+    private static final CaramelLogger logger = CaramelLogger.getLogger(CaramelConfigRegistry.class);
 
     private CaramelConfigProperties properties;
     /** < key, 配置数据 > */
@@ -73,12 +76,27 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
         return Collections.unmodifiableMap(configHolder);
     }
 
-    /** 加载配置数据，由 Spring 的 Bean 初始化方法 {@link #afterPropertiesSet()} 调用 */
-    private void load() {
-        Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(properties.getLocations(), properties.getPositions());
-        if (CaramelAide.isEmpty(resourceMap)) {
+    /** 加载配置数据 */
+    public void load() {
+        if (properties == null) {
+            logger.debug("[Caramel] Caramel config properties object is null.");
             return;
         }
+
+        if (!properties.isEnabled()) {
+            logger.debug("[Caramel] Caramel config is not enabled.");
+            return;
+        }
+
+        Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(properties.getLocations(), properties.getPositions());
+        if (CaramelAide.isEmpty(resourceMap)) {
+            logger.debug("[Caramel] No config file.");
+            return;
+        }
+
+        String echoLevel = CaramelConfigEcho.LEVEL_NONE;
+        boolean isEchoMasking = false;
+        CaramelConfigEcho echo = properties.getEcho();
 
         resourceMap.forEach((key, resources) -> resources.forEach(resource -> {
             try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
@@ -88,20 +106,17 @@ public class CaramelConfigRegistry implements InitializingBean, DisposableBean {
                     caramelConfig = new CaramelConfig(config);
                     configHolder.put(key, caramelConfig);
                 } else {
-                    caramelConfig.overwrite(config);
+                    caramelConfig.update(config);
                 }
+
+
+
             } catch (Exception e) {
                 throw new ConfigLoadException(String.format("[Caramel] config file read error: %s", resource), e);
             }
         }));
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        load();
-    }
-
-    @Override
     public void destroy() {
         configHolder.clear();
         properties = null;
