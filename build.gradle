@@ -7,9 +7,39 @@ allprojects {
             maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
             jcenter()
             mavenCentral()
+            maven { url "https://repo1.maven.org/maven2/" }
+            maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+            maven { url "https://repo.spring.io/libs-release/" }
+            maven { url "https://repo.spring.io/plugins-release/" }
+            maven { url "http://maven.icm.edu.pl/artifactory/repo/" }
+            maven { url "https://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/" }
         }
+
         dependencies {
             classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        }
+
+        Properties localProps = new Properties()
+        if (project.rootProject.file('local.properties').exists()) {
+            localProps.load(project.rootProject.file('local.properties').newDataInputStream())
+        }
+        if (project.rootProject.file('gradle-local.properties').exists()) {
+            localProps.load(project.rootProject.file('gradle-local.properties').newDataInputStream())
+        }
+        if (project.rootProject.file('gradle.properties').exists()) {
+            localProps.load(project.rootProject.file('gradle.properties').newDataInputStream())
+        }
+
+        gradle.taskGraph.whenReady {
+            tasks.each {task ->
+                def projectKey = "gradle.task." + task.project.name
+                def projectValue = localProps.getProperty(projectKey)
+                def taskKey = "gradle.task." + task.name + "." + task.project.name
+                def taskValue = localProps.getProperty(taskKey)
+                if ("false".equalsIgnoreCase(projectValue) || "false".equalsIgnoreCase(taskValue)) {
+                    task.enabled(false)
+                }
+            }
         }
     }
 
@@ -19,6 +49,12 @@ allprojects {
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         jcenter()
         mavenCentral()
+        maven { url "https://repo1.maven.org/maven2/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://repo.spring.io/libs-release/" }
+        maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "http://maven.icm.edu.pl/artifactory/repo/" }
+        maven { url "https://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/" }
     }
 
     apply plugin: 'java-library'

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+					        http://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        http://www.springframework.org/schema/context/spring-context.xsd
+					        http://www.springframework.org/schema/aop
+    						http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com.lomcat.caramel.alpaca">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController" />
+    </context:component-scan>
+
+    <bean id="caramelConfigProperties" class="com.lomcat.caramel.config.option.CaramelConfigProperties">
+        <property name="enabled" value="true" />
+        <property name="echo">
+            <bean class="com.lomcat.caramel.config.option.CaramelConfigEcho">
+                <property name="level" value="summary" />
+                <property name="masking" value="false" />
+            </bean>
+        </property>
+        <property name="locations">
+            <list>
+                <value>classpath:config/redis.properties</value>
+            </list>
+        </property>
+        <property name="positions">
+            <list>
+                <bean class="com.lomcat.caramel.config.option.CaramelConfigPosition">
+                    <property name="key" value="druid" />
+                    <property name="name" value="alpaca-druid" />
+                    <property name="extension" value="conf" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="caramelConfigRegistry" class="com.lomcat.caramel.config.CaramelConfigRegistry" init-method="init" destroy-method="destroy">
+        <property name="properties" ref="caramelConfigProperties" />
+    </bean>
+
+</beans>

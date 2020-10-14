@@ -75,8 +75,7 @@ public class CaramelConfigRegistry {
         return Collections.unmodifiableMap(configHolder);
     }
 
-    /** 加载配置数据 */
-    public void load() {
+    public void init() {
         if (properties == null) {
             logger.debug("[Caramel] Caramel config properties object is null.");
             return;
@@ -98,7 +97,7 @@ public class CaramelConfigRegistry {
                 Config config = ConfigFactory.parseReader(reader);
                 CaramelConfig caramelConfig = configHolder.get(key);
                 if (caramelConfig == null) {
-                    caramelConfig = new CaramelConfig(config);
+                    caramelConfig = new CaramelConfig(key, config);
                     configHolder.put(key, caramelConfig);
                 } else {
                     caramelConfig.update(config);
@@ -118,4 +117,5 @@ public class CaramelConfigRegistry {
         configHolder.clear();
         properties = null;
     }
+
 }

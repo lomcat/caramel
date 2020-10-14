@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config;
+package com.lomcat.caramel.alpaca.controller.view;
 
-import com.typesafe.config.Config;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * <h3>Caramel 配置文件数据</h3>
- *
  * @author Kweny
  * @since 0.0.1
  */
-public class CaramelConfig {
+@Controller
+@RequestMapping(value = "")
+public class IndexController {
 
-    private String key;
-    private Config content;
-
-    CaramelConfig(String key, Config content) {
-        this.key = key;
-        this.content = content;
+    @GetMapping(value = {"", "index"})
+    public ModelAndView index() {
+        Map<String, String> model = new HashMap<>();
+        model.put("Title", "Index");
+        model.put("END", "==================");
+        return new ModelAndView("index", model);
     }
 
-    void update(Config newContent) {
-        newContent.entrySet().forEach(entry -> content = content.withValue(entry.getKey(), entry.getValue()));
-    }
 }
