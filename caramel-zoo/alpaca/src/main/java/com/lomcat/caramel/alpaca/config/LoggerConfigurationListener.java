@@ -26,8 +26,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * TODO-Kweny LoggerConfigurationListener
- *
  * @author Kweny
  * @since 0.0.1
  */
