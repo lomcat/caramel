@@ -48,12 +48,12 @@
 
 用于描述配置文件所在位置的字符串。
 
-格式为：`[$key:][#priority:][path/]name[.extension]`。
+格式为：`[{key}][(priority)][path/]name[.extension]`。
 
-如：`$redis-master:#100:/config/redis.conf`。
+如：`{redis-master}(100)/config/redis.conf`，表示 classpath 下的 `/config/redis.conf` 文件，其配置数据 key 为 `redis-master`，优先级为 `100`。
 
 * 除了 name 部分，其它部分均为可选项。
-* key 必须以 `$` 符号开头，以 `:` 结尾。
-* priority 必须以 `#` 符号开头，以 `:` 结尾。
-* key 和 priority 之间顺序可以互换，其它部分的顺序固定。
+* key 必须以一对花括号 `{}` 包裹。
+* priority 必须以一对圆括号 `()` 包裹。
+* 各部分的顺序固定。
 * 定位规则和**定位描述对象**一致。
