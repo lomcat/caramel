@@ -16,5 +16,5 @@ ext {
     PROJECT_DESCRIPTION = 'Caramel Config'
 }
 
-//apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'
-apply from: '../bintray-upload-normal.gradle'
+//apply from: 'https://raw.githubusercontent.com/kweny/droaket/master/gradle/bintray-upload-normal.gradle'
+apply from: rootProject.file('_building/bintray-upload-normal.gradle').getAbsolutePath()

@@ -32,7 +32,12 @@ import java.util.*;
  * @since 0.0.1
  */
 class CaramelConfigLocator {
-
+    /** Key前缀 */
+    private static final String KEY_PREFIX = "$";
+    /** 优先级前缀 */
+    private static final String PRIORITY_PREFIX = "#";
+    /** Key和优先级分隔符 */
+    private static final String QUALIFIER_SEPARATOR = ":";
     /** 路径分隔符 */
     private static final String PATH_SEPARATOR = "/";
     /** 文件名和扩展名之间的分隔符 */
@@ -55,11 +60,18 @@ class CaramelConfigLocator {
     private static List<CaramelConfigPosition> resolveConfigPositions(String[] locations, CaramelConfigPosition[] positions) {
         List<CaramelConfigPosition> allPositions = new LinkedList<>();
 
-        // CaramelConfigRegistry#locations
+        // CaramelConfigProperties#locations
+        // 完整的 location 格式 $key#priority:path/name.ext，如 $redis#1:/config/redis.conf，
+        // 其中 key、priority、path、extension 部分均可选，
+        // 当未指定 key 时，将以 name 为 key，
+        // 当未指定 priority 时，将按加载顺序，后加载的优先级更高，若同时存在指定了 priority 和 未指定 priority 的同 key 文件，则有 priority 的优先级更高，
+        // 当未指定 path 时，将
         if (CaramelAide.isNotEmpty(locations)) {
             Arrays.stream(locations).map(CaramelAide::trim).forEach(originLocation -> {
                 CaramelConfigPosition position = new CaramelConfigPosition();
                 String location = originLocation;
+
+
 
                 // 截取路径部分（如果有的话）
                 int lastSeparatorIndex = location.lastIndexOf(PATH_SEPARATOR);
@@ -90,7 +102,7 @@ class CaramelConfigLocator {
             });
         }
 
-        // CaramelConfigRegistry#positions
+        // CaramelConfigProperties#positions
         if (CaramelAide.isNotEmpty(positions)) {
             Arrays.stream(positions).forEach(position -> {
                 if (CaramelAide.isBlank(position.getName())) {

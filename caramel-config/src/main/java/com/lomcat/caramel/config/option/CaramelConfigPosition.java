@@ -28,9 +28,17 @@ package com.lomcat.caramel.config.option;
  */
 public class CaramelConfigPosition {
     /**
-     * 配置文件的唯一标识，若不指定则使用 {@link #name}
+     * 配置数据的唯一标识，若不指定则使用 {@link #name}
      */
     private String key;
+    /**
+     * 配置文件优先级，相同 key 的配置文件中，优先级高的文件将覆盖优先级低的文件中的同名属性值
+     */
+    private double priority;
+    /**
+     * 配置文件的所在目录
+     */
+    private String path;
     /**
      * 配置文件的名称
      */
@@ -39,22 +47,15 @@ public class CaramelConfigPosition {
      * 配置文件的扩展名
      */
     private String extension;
-    /**
-     * 配置文件的所在目录
-     */
-    private String path;
-    /**
-     * 配置文件优先级，相同 key 的配置文件中，优先级高的文件将覆盖优先级低的文件中的同名属性值
-     */
-    private int priority;
 
     @Override
     public String toString() {
         return "CaramelConfigPosition{" +
                 "key='" + key + '\'' +
+                ", priority=" + priority +
+                ", path='" + path + '\'' +
                 ", name='" + name + '\'' +
                 ", extension='" + extension + '\'' +
-                ", path='" + path + '\'' +
                 '}';
     }
 
@@ -64,6 +65,22 @@ public class CaramelConfigPosition {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(double priority) {
+        this.priority = priority;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getName() {
@@ -80,21 +97,5 @@ public class CaramelConfigPosition {
 
     public void setExtension(String extension) {
         this.extension = extension;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
     }
 }

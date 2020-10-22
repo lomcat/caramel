@@ -47,6 +47,3 @@ ext {
     PUBLISHED_ARTIFACT_ID = 'caramel-zoo-spring-alpaca'
     PROJECT_DESCRIPTION = 'Caramel tester using Spring'
 }
-
-//apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'
-apply from: '../../bintray-upload-normal.gradle'
