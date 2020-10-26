@@ -18,7 +18,7 @@ package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.config.option.CaramelConfigPosition;
-import com.lomcat.caramel.exception.ConfigLoadException;
+import com.lomcat.caramel.exception.ConfigLocateException;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -32,12 +32,14 @@ import java.util.*;
  * @since 0.0.1
  */
 class CaramelConfigLocator {
-    /** Key前缀 */
-    private static final String KEY_PREFIX = "$";
+    /** Key 前缀 */
+    private static final String KEY_PREFIX = "{";
+    /** Key 后缀 */
+    private static final String KEY_SUFFIX = "}";
     /** 优先级前缀 */
-    private static final String PRIORITY_PREFIX = "#";
-    /** Key和优先级分隔符 */
-    private static final String QUALIFIER_SEPARATOR = ":";
+    private static final String PRIORITY_PREFIX = "(";
+    /** 优先级后缀 */
+    private static final String PRIORITY_SUFFIX = ")";
     /** 路径分隔符 */
     private static final String PATH_SEPARATOR = "/";
     /** 文件名和扩展名之间的分隔符 */
@@ -61,17 +63,20 @@ class CaramelConfigLocator {
         List<CaramelConfigPosition> allPositions = new LinkedList<>();
 
         // CaramelConfigProperties#locations
-        // 完整的 location 格式 $key#priority:path/name.ext，如 $redis#1:/config/redis.conf，
-        // 其中 key、priority、path、extension 部分均可选，
-        // 当未指定 key 时，将以 name 为 key，
-        // 当未指定 priority 时，将按加载顺序，后加载的优先级更高，若同时存在指定了 priority 和 未指定 priority 的同 key 文件，则有 priority 的优先级更高，
-        // 当未指定 path 时，将
         if (CaramelAide.isNotEmpty(locations)) {
             Arrays.stream(locations).map(CaramelAide::trim).forEach(originLocation -> {
                 CaramelConfigPosition position = new CaramelConfigPosition();
                 String location = originLocation;
 
-
+                // 提取 key 和 priority（如果有的话）
+                LocationSegmentPickup pickup = LocationSegmentPickup.newInstance(location).pickup();
+                if (CaramelAide.isNotBlank(pickup.key)) {
+                    position.setKey(pickup.key);
+                }
+                if (pickup.priority != null) {
+                    position.setPriority(pickup.priority);
+                }
+                location = pickup.location;
 
                 // 截取路径部分（如果有的话）
                 int lastSeparatorIndex = location.lastIndexOf(PATH_SEPARATOR);
@@ -93,10 +98,13 @@ class CaramelConfigLocator {
                 }
 
                 if (CaramelAide.isBlank(position.getName())) {
-                    throw new ConfigLoadException(String.format("[Caramel] Incomplete config file location, a name is required: %s", originLocation));
+                    throw new ConfigLocateException(String.format("[Caramel] Incomplete location (a name is required): %s", originLocation));
                 }
 
-                position.setKey(position.getName());
+                // 若未指定 key，则以 name 为 key
+                if (CaramelAide.isBlank(position.getKey())) {
+                    position.setKey(position.getName());
+                }
 
                 allPositions.add(position);
             });
@@ -106,9 +114,10 @@ class CaramelConfigLocator {
         if (CaramelAide.isNotEmpty(positions)) {
             Arrays.stream(positions).forEach(position -> {
                 if (CaramelAide.isBlank(position.getName())) {
-                    throw new ConfigLoadException(String.format("[Caramel] Incomplete config file location, a name is required: %s", position));
+                    throw new ConfigLocateException(String.format("[Caramel] Incomplete location (a name is required): %s", position));
                 }
 
+                // 若未指定 key，则以 name 为 key
                 if (CaramelAide.isBlank(position.getKey())) {
                     position.setKey(position.getName());
                 }
@@ -126,6 +135,7 @@ class CaramelConfigLocator {
      * 相同 key 的 Resource 列表需保证优先级从低到高的顺序，高优先级文件将覆盖低优先级中的同名属性。
      */
     private static Map<String, List<Resource>> resolveConfigResources(List<CaramelConfigPosition> positions) {
+        // TODO-Kweny 包装 Resource，携带 key 和 priority
         Map<String, List<Resource>> allResources = new HashMap<>();
 
         if (CaramelAide.isNotEmpty(positions)) {
@@ -191,4 +201,103 @@ class CaramelConfigLocator {
 
         return resources;
     }
+
+    /** 检查并提取 key 和 priority */
+    private static class LocationSegmentPickup {
+        private String originalLocation;
+        private String location;
+        private String key;
+        private Double priority;
+
+        private static LocationSegmentPickup newInstance(String location) {
+            LocationSegmentPickup instance = new LocationSegmentPickup();
+            instance.originalLocation = location;
+            instance.location = location;
+            return instance;
+        }
+
+        private LocationSegmentPickup pickup() {
+            int keyPrefixIndex = location.indexOf(KEY_PREFIX);
+            int keyPrefixLastIndex = location.indexOf(KEY_PREFIX);
+            int keySuffixIndex = location.indexOf(KEY_SUFFIX);
+            int keySuffixLastIndex = location.indexOf(KEY_SUFFIX);
+
+            boolean isKeySetup = checkSetup(keyPrefixIndex, keyPrefixLastIndex, keySuffixIndex, keySuffixLastIndex, KEY_PREFIX, KEY_SUFFIX);
+
+            int priorityPrefixIndex = location.indexOf(PRIORITY_PREFIX);
+            int priorityPrefixLastIndex = location.lastIndexOf(PRIORITY_PREFIX);
+            int prioritySuffixIndex = location.indexOf(PRIORITY_SUFFIX);
+            int prioritySuffixLastIndex = location.lastIndexOf(PRIORITY_SUFFIX);
+
+            boolean isPrioritySetup = checkSetup(priorityPrefixIndex, priorityPrefixLastIndex, prioritySuffixIndex, prioritySuffixLastIndex, PRIORITY_PREFIX, PRIORITY_SUFFIX);
+
+            if (!isKeySetup && !isPrioritySetup) {
+                return this;
+            }
+
+            // 前后缀顺序错乱：(xxx{xxx)、(xxx}xxx)、{xxx(xxx}、{xxx)xxx}
+            if (isKeySetup && isPrioritySetup
+                && ((keyPrefixIndex > priorityPrefixIndex && keyPrefixIndex < prioritySuffixIndex)
+                        || (keySuffixIndex > priorityPrefixIndex && keySuffixIndex < prioritySuffixIndex)
+                        || (priorityPrefixIndex > keyPrefixIndex && priorityPrefixIndex < keySuffixIndex)
+                        || (prioritySuffixIndex > keyPrefixIndex && prioritySuffixIndex < keySuffixIndex)
+                    )) {
+                throw new ConfigLocateException(String.format("[Caramel] Malformed location (symbols are out of order): %s", originalLocation));
+            }
+
+            if (isKeySetup) {
+                String keySegment = originalLocation.substring(keyPrefixIndex, keySuffixIndex + 1);
+                String keyString = keySegment.replace(KEY_PREFIX, "").replace(KEY_SUFFIX, "");
+                if (CaramelAide.isNotBlank(keyString)) {
+                    // 空串、空白字符等同于未指定 key，将使用 name 作为 key
+                    this.key = keyString;
+                }
+                this.location = CaramelAide.trim(location.replace(keySegment, ""));
+            }
+
+            if (isPrioritySetup) {
+                String prioritySegment = originalLocation.substring(priorityPrefixIndex, prioritySuffixIndex + 1);
+                String priorityString = prioritySegment.replace(PRIORITY_PREFIX, "").replace(PRIORITY_SUFFIX, "");
+                if (CaramelAide.isNotBlank(priorityString)) {
+                    // 空串、单个或多个空白字符等同于未指定优先级，因此对于空串和空白字符不做处理（priority = null）
+                    try {
+                        this.priority = Double.parseDouble(CaramelAide.trim(priorityString));
+                    } catch (NumberFormatException e) {
+                        throw new ConfigLocateException(String.format("[Caramel] Malformed location (priority must be a number): %s", originalLocation), e);
+                    }
+                }
+                this.location = CaramelAide.trim(location.replace(prioritySegment, ""));
+            }
+
+            // location 去除 key 和 priority 部分无内容
+            if (CaramelAide.isBlank(this.location)) {
+                throw new ConfigLocateException(String.format("[Caramel] Incomplete location (a name is required): %s", originalLocation));
+            }
+
+            return this;
+        }
+
+        private boolean checkSetup(int prefixIndex, int prefixLastIndex, int suffixIndex, int suffixLastIndex, String prefix, String suffix) {
+            // 未设置
+            if (prefixIndex == -1 && suffixIndex == -1) {
+                return false;
+            }
+
+            // 存在多余的前缀或后缀：{xxx{、(xxx(
+            if (prefixIndex != prefixLastIndex) {
+                throw new ConfigLocateException(String.format("[Caramel] Malformed location (duplicate symbol '%s'): %s", prefix, originalLocation));
+            }
+            if (suffixIndex != suffixLastIndex) {
+                throw new ConfigLocateException(String.format("[Caramel] Malformed location (duplicate symbol '%s'): %s", suffix, originalLocation));
+            }
+
+            // 前后缀写反了：}xxx{、)xxx(
+            if (prefixIndex > suffixIndex) {
+                throw new ConfigLocateException(String.format("[Caramel] Malformed location ( '%s' and '%s' symbols are reversed): %s", prefix, suffix, originalLocation));
+            }
+
+            return true;
+        }
+    }
+
 }

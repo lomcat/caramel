@@ -14,31 +14,15 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.exception;
+package com.lomcat.caramel.config;
 
 /**
- * Caramel 配置文件加载异常
+ * TODO-Kweny CaramelConfigResources
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class ConfigLoadException extends RuntimeException {
-    private static final long serialVersionUID = 7651931054812888311L;
-
-    public ConfigLoadException() {
-        super();
-    }
-
-    public ConfigLoadException(String message) {
-        super(message);
-    }
-
-    public ConfigLoadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ConfigLoadException(Throwable cause) {
-        super(cause);
-    }
+public class CaramelConfigResources {
+    private String key;
 
 }

@@ -32,9 +32,10 @@ public class CaramelConfigPosition {
      */
     private String key;
     /**
-     * 配置文件优先级，相同 key 的配置文件中，优先级高的文件将覆盖优先级低的文件中的同名属性值
+     * 配置文件优先级，相同 key 的配置文件中，优先级高的文件将覆盖优先级低的文件中的同名属性值。
+     * 可是小数或负数，若为 null，则表示未设置优先级
      */
-    private double priority;
+    private Double priority;
     /**
      * 配置文件的所在目录
      */
@@ -67,11 +68,11 @@ public class CaramelConfigPosition {
         this.key = key;
     }
 
-    public double getPriority() {
+    public Double getPriority() {
         return priority;
     }
 
-    public void setPriority(double priority) {
+    public void setPriority(Double priority) {
         this.priority = priority;
     }
 

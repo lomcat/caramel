@@ -25,7 +25,7 @@
         </property>
         <property name="locations">
             <list>
-                <value>classpath:config/redis.properties</value>
+                <value>{master}(100)classpath:config/redis.properties</value>
             </list>
         </property>
         <property name="positions">

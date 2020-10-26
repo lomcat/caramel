@@ -17,27 +17,27 @@
 package com.lomcat.caramel.exception;
 
 /**
- * Caramel 配置文件加载异常
+ * Caramel 配置文件定位异常
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class ConfigLoadException extends RuntimeException {
-    private static final long serialVersionUID = 7651931054812888311L;
+public class ConfigLocateException extends RuntimeException {
+    private static final long serialVersionUID = -220143062276159395L;
 
-    public ConfigLoadException() {
+    public ConfigLocateException() {
         super();
     }
 
-    public ConfigLoadException(String message) {
+    public ConfigLocateException(String message) {
         super(message);
     }
 
-    public ConfigLoadException(String message, Throwable cause) {
+    public ConfigLocateException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ConfigLoadException(Throwable cause) {
+    public ConfigLocateException(Throwable cause) {
         super(cause);
     }
 
