@@ -1,6 +1,8 @@
 rootProject.name = 'caramel'
-include 'caramel-config'
 include 'caramel-assist'
+include 'caramel-core'
+include 'caramel-config'
 
 include 'caramel-zoo'
 include 'caramel-zoo:alpaca'
+

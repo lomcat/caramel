@@ -1,0 +1,14 @@
+archivesBaseName = 'caramel-core'
+
+dependencies {
+    implementation slf4jApi
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-core'
+    PUBLISHED_ARTIFACT_ID = 'caramel-core'
+    PROJECT_DESCRIPTION = 'Caramel Core'
+}
+
+//apply from: 'https://raw.githubusercontent.com/kweny/droaket/master/gradle/bintray-upload-normal.gradle'
+apply from: rootProject.file('_building/bintray-upload-normal.gradle').getAbsolutePath()

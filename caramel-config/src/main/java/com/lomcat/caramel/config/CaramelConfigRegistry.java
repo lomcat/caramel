@@ -41,7 +41,8 @@ public class CaramelConfigRegistry {
     private static final CaramelLogger logger = CaramelLogger.getLogger(CaramelConfigRegistry.class);
 
     private CaramelConfigProperties properties;
-    /** < key, 配置数据 > */
+
+    /** 配置数据注册表，结构为 < key, config > */
     private final Map<String, CaramelConfig> configHolder;
 
     public CaramelConfigRegistry() {
@@ -49,7 +50,7 @@ public class CaramelConfigRegistry {
     }
 
     /**
-     * 获取指定 key 对应的配置文件对象
+     * 获取指定 key 对应的配置数据
      *
      * @param key 配置文件标识，可能是文件名
      * @return 一个 {@link CaramelConfig} 对象
