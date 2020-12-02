@@ -183,11 +183,6 @@ public class CaramelConfigRegistry {
         TODO-Kweny config 中的配置项名称，驼峰和串型 进行同名覆盖处理
         TODO-Kweny 本地配置文件加载完成，触发监听器（如 开始用云端配置覆盖本地配置 等，同时需要根据 echo 进行打印）
         监听器在 CaramelConfigRegistry 初始化时注册加载，可以考虑 注解扫描 和 代码add 两种方式
-
-        caramel-druid: jdbc链接字符串：url + url-queries
-        caramel-jdbc
-        caramel-lettuce
-        caramel-jedis
         */
     }
 

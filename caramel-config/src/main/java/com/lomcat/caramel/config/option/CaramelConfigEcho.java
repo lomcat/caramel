@@ -83,24 +83,6 @@ public class CaramelConfigEcho {
         logger.info(text);
     }
 
-    public void summary(String format, Object... args) {
-        if (isSummaryEnabled()) {
-            logger.info(format, args);
-        }
-    }
-
-    public void track(String format, Object... args) {
-        if (isTrackEnabled()) {
-            logger.info(format, args);
-        }
-    }
-
-    public void content(String format, Object... args) {
-        if (isContentEnabled()) {
-            logger.info(format, args);
-        }
-    }
-
     private void resolveWaves() {
         if (CaramelAide.isBlank(this.waves)) {
             return;
