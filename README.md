@@ -21,10 +21,19 @@
 - [ ] caramel-config-remote-http
 - [ ] caramel-config-remote-git
 - [ ] caramel-config-remote-nacos
-- [ ] caramel-config-remote-spring
-- [ ] caramel-redis
+- [ ] caramel-config-remote-scc (spring-cloud-config)
+- [ ] caramel-lettuce
+- [ ] caramel-jedis
+- [ ] caramel-spring-redis
+- [ ] caramel-jdbc
+- [ ] caramel-c3p0
+- [ ] caramel-dbcp
+- [ ] caramel-tomcat-jdbc (tomcat-jdbc-pool)(tjp)
+- [ ] caramel-bonecp
 - [ ] caramel-druid
 - [ ] caramel-kafka
-- [ ] caramel-amqp
+- [ ] caramel-activemq
+- [ ] caramel-rebbitmq
+- [ ] caramel-spring-amqp
 - [ ] caramel-mongodb
 - [ ] caramel-elasticsearch

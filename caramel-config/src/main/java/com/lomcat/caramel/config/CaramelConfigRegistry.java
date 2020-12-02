@@ -108,8 +108,9 @@ public class CaramelConfigRegistry {
 
         bunchesMap.forEach((key, resourceBunches) -> {
 
-            StringBuilder echoBuilder = new StringBuilder("\n");
+            StringBuilder echoBuilder = new StringBuilder(String.format("[Caramel] Echo config resource loading process for key '%s'...\n", key));
             if (echo.isSummaryEnabled()) {
+                // 启用了 echo.summary，构建 summary 日志内容
                 echoBuilder.append(String.format("\tLoad CaramelConfig(%s) from local files...\n", key));
             }
 
@@ -117,23 +118,19 @@ public class CaramelConfigRegistry {
             Collections.sort(resourceBunches);
 
             AtomicReference<Config> keyConfig = new AtomicReference<>();
-
             resourceBunches.forEach(bunch -> {
-
                 // 加载合并同一个 bunch 中的多个 resource
                 bunch.resources().forEach(resource -> {
-
-//                    echo.summary("\t\tCaramelConfig(druid) <- {}", resource);
                     if (echo.isSummaryEnabled()) {
+                        // 启用了 echo.summary，构建 summary 日志内容
                         echoBuilder.append(String.format("\t\tCaramelConfig(druid) <- %s\n", resource));
                     }
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
                         Config resourceConfig = ConfigFactory.parseReader(reader);
                         if (keyConfig.get() == null) {
-
                             if (echo.isTrackEnabled()) {
-//                                resourceConfig.entrySet().forEach(entry -> echo.track("\t\t\t\tNew property into CaramelConfig({}) <- {}={}", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
+                                // 启用了 echo.track， 构建 track 日志内容
                                 resourceConfig.entrySet().forEach(entry ->
                                         echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped())));
                             }
@@ -141,9 +138,8 @@ public class CaramelConfigRegistry {
                             keyConfig.set(resourceConfig);
                         } else {
                             resourceConfig.entrySet().forEach(entry -> {
-
-//                                echo.track("\t\t\t\tMerge property into CaramelConfig({}) <- {}={}", bunch.key(), entry.getKey(), entry.getValue().unwrapped());
                                 if (echo.isTrackEnabled()) {
+                                    // 启用了 echo.track， 构建 track 日志内容
                                     if (keyConfig.get().hasPath(entry.getKey())) {
                                         echoBuilder.append(String.format("\t\t\tRenew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
                                     } else {
@@ -159,20 +155,22 @@ public class CaramelConfigRegistry {
                         throw new ConfigLoadException(String.format("[Caramel] config file read error: %s", resource), e);
                     }
                 });
-
             });
 
+            // 添加配置数据到注册表
             caramelConfigHolder.put(key, new CaramelConfig(key, keyConfig.get()));
 
             if (echo.isContentEnabled()) {
+                // 启用了 echo.content， 构建 content 日志内容
                 CaramelConfig caramelConfig = caramelConfigHolder.get(key);
                 if (caramelConfig != null) {
-                    echoBuilder.append(String.format("\n\tContent of CaramelConfig(%s):\n", caramelConfig.getKey()));
+                    echoBuilder.append(String.format("\tContent of CaramelConfig(%s):\n", caramelConfig.getKey()));
                     caramelConfig.content().entrySet().forEach(entry -> echoBuilder.append("\t\t").append(entry.getKey()).append("=").append(entry.getValue().unwrapped()).append("\n"));
                 }
             }
 
             if (echo.isEchoEnabled()) {
+                // 启用了 echo.summary,track,content 任意一个，输出到日志
                 echo.echo(echoBuilder.toString());
             }
 
@@ -185,6 +183,11 @@ public class CaramelConfigRegistry {
         TODO-Kweny config 中的配置项名称，驼峰和串型 进行同名覆盖处理
         TODO-Kweny 本地配置文件加载完成，触发监听器（如 开始用云端配置覆盖本地配置 等，同时需要根据 echo 进行打印）
         监听器在 CaramelConfigRegistry 初始化时注册加载，可以考虑 注解扫描 和 代码add 两种方式
+
+        caramel-druid: jdbc链接字符串：url + url-queries
+        caramel-jdbc
+        caramel-lettuce
+        caramel-jedis
         */
     }
 

@@ -26,12 +26,19 @@
         <property name="locations">
             <list>
                 <value>{druid}(100)classpath:config/redis.properties</value>
+                <value>{test}(300)classpath:config/redis.properties</value>
             </list>
         </property>
         <property name="positions">
             <list>
                 <bean class="com.lomcat.caramel.config.option.CaramelConfigPosition">
                     <property name="key" value="druid" />
+                    <property name="name" value="alpaca-druid" />
+                    <property name="extension" value="conf" />
+                    <property name="priority" value="200" />
+                </bean>
+                <bean class="com.lomcat.caramel.config.option.CaramelConfigPosition">
+                    <property name="key" value="test" />
                     <property name="name" value="alpaca-druid" />
                     <property name="extension" value="conf" />
                     <property name="priority" value="200" />
