@@ -19,13 +19,13 @@
         <property name="enabled" value="true" />
         <property name="echo">
             <bean class="com.lomcat.caramel.config.option.CaramelConfigEcho">
-                <property name="level" value="summary" />
+                <property name="waves" value="summary,track,content" />
                 <property name="masking" value="false" />
             </bean>
         </property>
         <property name="locations">
             <list>
-                <value>{master}(100)classpath:config/redis.properties</value>
+                <value>{druid}(100)classpath:config/redis.properties</value>
             </list>
         </property>
         <property name="positions">
@@ -34,6 +34,7 @@
                     <property name="key" value="druid" />
                     <property name="name" value="alpaca-druid" />
                     <property name="extension" value="conf" />
+                    <property name="priority" value="200" />
                 </bean>
             </list>
         </property>

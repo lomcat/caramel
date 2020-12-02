@@ -18,17 +18,18 @@ package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.assist.CaramelLogger;
+import com.lomcat.caramel.config.option.CaramelConfigEcho;
 import com.lomcat.caramel.config.option.CaramelConfigProperties;
 import com.lomcat.caramel.exception.ConfigLoadException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.springframework.core.io.Resource;
 
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <h3>持有 caramel 配置数据</h3>
@@ -43,20 +44,20 @@ public class CaramelConfigRegistry {
     private CaramelConfigProperties properties;
 
     /** 配置数据注册表，结构为 < key, config > */
-    private final Map<String, CaramelConfig> configHolder;
+    private final Map<String, CaramelConfig> caramelConfigHolder;
 
     public CaramelConfigRegistry() {
-        this.configHolder = new ConcurrentHashMap<>();
+        this.caramelConfigHolder = new ConcurrentHashMap<>();
     }
 
     /**
      * 获取指定 key 对应的配置数据
      *
-     * @param key 配置文件标识，可能是文件名
+     * @param key 配置数据标识，可能是文件名
      * @return 一个 {@link CaramelConfig} 对象
      */
     public CaramelConfig get(String key) {
-        return configHolder.get(key);
+        return caramelConfigHolder.get(key);
     }
 
     public CaramelConfigProperties getProperties() {
@@ -68,12 +69,12 @@ public class CaramelConfigRegistry {
     }
 
     /**
-     * 获取所有的配置文件对象
+     * 获取所有的配置数据
      *
-     * @return 一个 key 为配置文件标识，value 为 {@link CaramelConfig} 的 {@link Map} 对象
+     * @return 一个 key 为配置数据标识，value 为 {@link CaramelConfig} 的 {@link Map} 对象
      */
     public Map<String, CaramelConfig> getAll() {
-        return Collections.unmodifiableMap(configHolder);
+        return Collections.unmodifiableMap(caramelConfigHolder);
     }
 
     public void init() {
@@ -87,35 +88,108 @@ public class CaramelConfigRegistry {
             return;
         }
 
-        Map<String, List<Resource>> resourceMap = CaramelConfigLocator.locate(properties.getLocations(), properties.getPositions());
-        if (CaramelAide.isEmpty(resourceMap)) {
+        /*
+        < 配置数据的key, bunch的集合 > 结构的配置文件集Map，
+        每个bunch中可能含有多个文件，其顺序根据约定优先级从低到高排序，
+        每个key可能对应多个bunch，加载之前，会对同key的bunch根据指定优先级从低到高排序，
+        因此同key下配置文件资源的加载顺序为：
+            for 外层 指定 优先级 从低到高 {
+                for 内层 约定 优先级 从低到高
+            }
+        最终 后加载的高优先级项 将覆盖 先加载的低优先级项
+         */
+        Map<String, List<ConfigResourceBunch>> bunchesMap = ConfigLocator.locate(properties.getLocations(), properties.getPositions());
+        if (CaramelAide.isEmpty(bunchesMap)) {
             logger.debug("[Caramel] No config file.");
             return;
         }
 
-        resourceMap.forEach((key, resources) -> resources.forEach(resource -> {
-            try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
-                Config config = ConfigFactory.parseReader(reader);
-                CaramelConfig caramelConfig = configHolder.get(key);
-                if (caramelConfig == null) {
-                    caramelConfig = new CaramelConfig(key, config);
-                    configHolder.put(key, caramelConfig);
-                } else {
-                    caramelConfig.update(config);
-                }
-            } catch (Exception e) {
-                throw new ConfigLoadException(String.format("[Caramel] config file read error: %s", resource), e);
+        CaramelConfigEcho echo = properties.getEcho();
+
+        bunchesMap.forEach((key, resourceBunches) -> {
+
+            StringBuilder echoBuilder = new StringBuilder("\n");
+            if (echo.isSummaryEnabled()) {
+                echoBuilder.append(String.format("\tLoad CaramelConfig(%s) from local files...\n", key));
             }
-        }));
+
+            // 根据优先级从小到大排序
+            Collections.sort(resourceBunches);
+
+            AtomicReference<Config> keyConfig = new AtomicReference<>();
+
+            resourceBunches.forEach(bunch -> {
+
+                // 加载合并同一个 bunch 中的多个 resource
+                bunch.resources().forEach(resource -> {
+
+//                    echo.summary("\t\tCaramelConfig(druid) <- {}", resource);
+                    if (echo.isSummaryEnabled()) {
+                        echoBuilder.append(String.format("\t\tCaramelConfig(druid) <- %s\n", resource));
+                    }
+
+                    try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
+                        Config resourceConfig = ConfigFactory.parseReader(reader);
+                        if (keyConfig.get() == null) {
+
+                            if (echo.isTrackEnabled()) {
+//                                resourceConfig.entrySet().forEach(entry -> echo.track("\t\t\t\tNew property into CaramelConfig({}) <- {}={}", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
+                                resourceConfig.entrySet().forEach(entry ->
+                                        echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped())));
+                            }
+
+                            keyConfig.set(resourceConfig);
+                        } else {
+                            resourceConfig.entrySet().forEach(entry -> {
+
+//                                echo.track("\t\t\t\tMerge property into CaramelConfig({}) <- {}={}", bunch.key(), entry.getKey(), entry.getValue().unwrapped());
+                                if (echo.isTrackEnabled()) {
+                                    if (keyConfig.get().hasPath(entry.getKey())) {
+                                        echoBuilder.append(String.format("\t\t\tRenew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
+                                    } else {
+                                        echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
+                                    }
+                                }
+
+                                keyConfig.set(keyConfig.get().withValue(entry.getKey(), entry.getValue()));
+                            });
+
+                        }
+                    } catch (Exception e) {
+                        throw new ConfigLoadException(String.format("[Caramel] config file read error: %s", resource), e);
+                    }
+                });
+
+            });
+
+            caramelConfigHolder.put(key, new CaramelConfig(key, keyConfig.get()));
+
+            if (echo.isContentEnabled()) {
+                CaramelConfig caramelConfig = caramelConfigHolder.get(key);
+                if (caramelConfig != null) {
+                    echoBuilder.append(String.format("\n\tContent of CaramelConfig(%s):\n", caramelConfig.getKey()));
+                    caramelConfig.content().entrySet().forEach(entry -> echoBuilder.append("\t\t").append(entry.getKey()).append("=").append(entry.getValue().unwrapped()).append("\n"));
+                }
+            }
+
+            if (echo.isEchoEnabled()) {
+                echo.echo(echoBuilder.toString());
+            }
+
+        });
+
+
 
         /*
-        TODO-Kweny 本地配置文件加载完成，触发监听器（如 echo打印、开始用云端配置覆盖本地配置 等）
+        TODO-Kweny 重写 Resource 对象，解除对 spring-core.io 的依赖
+        TODO-Kweny config 中的配置项名称，驼峰和串型 进行同名覆盖处理
+        TODO-Kweny 本地配置文件加载完成，触发监听器（如 开始用云端配置覆盖本地配置 等，同时需要根据 echo 进行打印）
         监听器在 CaramelConfigRegistry 初始化时注册加载，可以考虑 注解扫描 和 代码add 两种方式
         */
     }
 
     public void destroy() {
-        configHolder.clear();
+        caramelConfigHolder.clear();
         properties = null;
     }
 

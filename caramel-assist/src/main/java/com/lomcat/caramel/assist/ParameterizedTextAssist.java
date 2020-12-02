@@ -22,6 +22,7 @@ package com.lomcat.caramel.assist;
  * @author Kweny
  * @since 0.0.1
  */
+@Deprecated
 class ParameterizedTextAssist {
 
     private static final char DELIM_START = '{';

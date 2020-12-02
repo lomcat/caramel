@@ -24,6 +24,7 @@ import java.util.Arrays;
  * @author Kweny
  * @since 0.0.1
  */
+@Deprecated
 public class ParameterizedText {
 
     /** 占位符样式 */

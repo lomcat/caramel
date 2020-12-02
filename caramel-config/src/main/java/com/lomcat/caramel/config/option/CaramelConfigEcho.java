@@ -16,6 +16,9 @@
 
 package com.lomcat.caramel.config.option;
 
+import com.lomcat.caramel.assist.CaramelAide;
+import com.lomcat.caramel.assist.CaramelLogger;
+
 /**
  * <h3>Caramel 加载的配置文件内容打印</h3>
  *
@@ -24,25 +27,48 @@ package com.lomcat.caramel.config.option;
  */
 public class CaramelConfigEcho {
 
-    public static final String LEVEL_NONE = "none";
-    public static final String LEVEL_SUMMARY = "summary";
-    public static final String LEVEL_DETAIL = "detail";
+    private static final CaramelLogger logger = CaramelLogger.getLogger(CaramelConfigEcho.class);
+
+    public static final String WAVE_SUMMARY = "summary";
+    public static final String WAVE_TRACK = "track";
+    public static final String WAVE_CONTENT = "content";
 
     /**
-     * 打印内容的细节度：none-不打印；summary-打印概要；detail-打印详情
+     * 打印内容的细节度：none-不打印；track-打印加载轨迹；detail-打印配置内容
      */
-    private String level;
+    private String waves;
     /**
      * 敏感数据打印时是否脱敏
      */
-    private boolean masking;
+    private boolean masking;// TODO-Kweny 需要配置项支持特殊标记的加密/解密处理
 
-    public String getLevel() {
-        return level;
+    private boolean summaryEnabled;
+    private boolean trackEnabled;
+    private boolean contentEnabled;
+
+    public boolean isEchoEnabled() {
+        return summaryEnabled || trackEnabled || contentEnabled;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public boolean isSummaryEnabled() {
+        return summaryEnabled || trackEnabled;
+    }
+
+    public boolean isTrackEnabled() {
+        return trackEnabled;
+    }
+
+    public boolean isContentEnabled() {
+        return contentEnabled;
+    }
+
+    public String getWaves() {
+        return waves;
+    }
+
+    public void setWaves(String waves) {
+        this.waves = waves;
+        resolveWaves();
     }
 
     public boolean isMasking() {
@@ -53,7 +79,37 @@ public class CaramelConfigEcho {
         this.masking = masking;
     }
 
-    public void echo() {
+    public void echo(String text) {
+        logger.info(text);
+    }
 
+    public void summary(String format, Object... args) {
+        if (isSummaryEnabled()) {
+            logger.info(format, args);
+        }
+    }
+
+    public void track(String format, Object... args) {
+        if (isTrackEnabled()) {
+            logger.info(format, args);
+        }
+    }
+
+    public void content(String format, Object... args) {
+        if (isContentEnabled()) {
+            logger.info(format, args);
+        }
+    }
+
+    private void resolveWaves() {
+        if (CaramelAide.isBlank(this.waves)) {
+            return;
+        }
+        String[] waveSections = this.waves.split(",");
+        for (String section : waveSections) {
+            this.summaryEnabled |= CaramelAide.equalsIgnoreCaseAfterTrim(section, WAVE_SUMMARY);
+            this.trackEnabled |= CaramelAide.equalsIgnoreCaseAfterTrim(section, WAVE_TRACK);
+            this.contentEnabled |= CaramelAide.equalsIgnoreCaseAfterTrim(section, WAVE_CONTENT);
+        }
     }
 }

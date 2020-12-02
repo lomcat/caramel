@@ -19,14 +19,14 @@ package com.lomcat.caramel.config;
 import com.typesafe.config.Config;
 
 /**
- * <h3>Caramel 配置文件数据</h3>
+ * <h3>Caramel 配置数据</h3>
  *
  * @author Kweny
  * @since 0.0.1
  */
 public class CaramelConfig {
 
-    private String key;
+    private final String key;
     private Config content;
 
     CaramelConfig(String key, Config content) {
@@ -36,5 +36,13 @@ public class CaramelConfig {
 
     void update(Config newContent) {
         newContent.entrySet().forEach(entry -> content = content.withValue(entry.getKey(), entry.getValue()));
+    }
+
+    Config content() {
+        return this.content;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 }
