@@ -16,7 +16,7 @@
 
 ## TODO
 
-- [ ] caramel-config
+- [x] caramel-config
 - [ ] caramel-config-remote-api
 - [ ] caramel-config-remote-http
 - [ ] caramel-config-remote-git
@@ -37,3 +37,4 @@
 - [ ] caramel-spring-amqp
 - [ ] caramel-mongodb
 - [ ] caramel-elasticsearch
+- [ ] caramel-xxx-spring-boot-starter
