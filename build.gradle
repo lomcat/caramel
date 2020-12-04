@@ -1,3 +1,5 @@
+import org.gradle.api.internal.project.DefaultProject
+
 // 子模块通用配置
 allprojects {
     buildscript {
@@ -65,8 +67,11 @@ allprojects {
             return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
         }
 
+        caramelCore = project(':caramel-core') as DefaultProject
+
         // ----- dependency definitions -----
         slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
+        typesafeConfig = 'com.typesafe:config:1.4.0'
 
         // ----- publications -----
 

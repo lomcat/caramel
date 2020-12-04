@@ -18,10 +18,10 @@ package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.config.option.CaramelConfigPosition;
+import com.lomcat.caramel.core.io.DefaultResourceLoader;
+import com.lomcat.caramel.core.io.Resource;
+import com.lomcat.caramel.core.io.ResourceLoader;
 import com.lomcat.caramel.exception.ConfigLocateException;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import java.util.*;
 

@@ -17,8 +17,8 @@
 package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.config.option.CaramelConfigPosition;
+import com.lomcat.caramel.core.io.Resource;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -50,6 +50,7 @@ class ConfigResourceBunch implements Comparable<ConfigResourceBunch> {
     static ConfigResourceBunch newInstance(String key, Double priority, List<Resource> resources) {
         return new ConfigResourceBunch(key, priority, resources);
     }
+
     ConfigResourceBunch(String key, Double priority, List<Resource> resources) {
         this.key = key;
         this.priority = priority;

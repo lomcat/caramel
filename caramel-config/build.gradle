@@ -2,12 +2,13 @@ archivesBaseName = 'caramel-config'
 
 dependencies {
     api project(':caramel-assist')
+    api caramelCore
 
-    implementation 'com.typesafe:config:1.4.0'
-    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation typesafeConfig
+    implementation slf4jApi
 
-    implementation 'org.springframework:spring-core:5.2.9.RELEASE'
-//    implementation 'org.springframework:spring-beans:5.2.9.RELEASE'
+//    implementation 'org.springframework:spring-core:5.3.1'
+//    implementation 'org.springframework:spring-beans:5.3.1'
 }
 
 ext {
