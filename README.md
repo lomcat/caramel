@@ -12,7 +12,7 @@
 
 `译意` 焦糖；焦糖糖果；饴糖
 
-`释义` `Ca`refree F`rame`work `L`ibrary 一套可以让你更加轻松地对各种开发框架进行配置的工具库
+`释义` `Ca`refree F`rame`work `L`ibrary 一套可以让你更加轻松地使用和配置各种开发框架的工具库
 
 ## TODO
 
