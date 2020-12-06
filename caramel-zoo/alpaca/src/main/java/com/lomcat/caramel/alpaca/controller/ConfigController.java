@@ -17,7 +17,7 @@
 package com.lomcat.caramel.alpaca.controller;
 
 import com.lomcat.caramel.config.CaramelConfig;
-import com.lomcat.caramel.config.CaramelConfigRegistry;
+import com.lomcat.caramel.config.ConfigRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,16 +32,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "config")
 public class ConfigController {
 
-    private final CaramelConfigRegistry caramelConfigRegistry;
+    private final ConfigRegistry configRegistry;
 
     @Autowired
-    public ConfigController(CaramelConfigRegistry caramelConfigRegistry) {
-        this.caramelConfigRegistry = caramelConfigRegistry;
+    public ConfigController(ConfigRegistry configRegistry) {
+        this.configRegistry = configRegistry;
     }
 
     @GetMapping(value = "{key}")
     public String config(@PathVariable String key) {
-        CaramelConfig config = caramelConfigRegistry.get(key);
+        CaramelConfig config = configRegistry.get(key);
         System.out.println(config);
         return config != null ? config.toString() : "null";
     }

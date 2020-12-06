@@ -17,10 +17,10 @@
 ## TODO
 
 - [x] caramel-config
-- [ ] caramel-config-remote-api
-- [ ] caramel-config-remote-http
-- [ ] caramel-config-remote-git
-- [ ] caramel-config-remote-nacos
+- [x] caramel-config-local
+- [ ] caramel-config-http
+- [ ] caramel-config-git
+- [ ] caramel-config-hacos
 - [ ] caramel-config-remote-scc (spring-cloud-config)
 - [ ] caramel-lettuce
 - [ ] caramel-jedis

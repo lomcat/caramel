@@ -1,8 +1,14 @@
-rootProject.name = 'caramel'
+
 include 'caramel-assist'
 include 'caramel-core'
 include 'caramel-config'
+include 'caramel-config-local'
 
 include 'caramel-zoo'
 include 'caramel-zoo:alpaca'
+
+rootProject.name = 'caramel'
+rootProject.children.each {project ->
+    project.buildFileName = "${project.name}.gradle"
+}
 

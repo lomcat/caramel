@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config.option;
+package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.assist.CaramelLogger;

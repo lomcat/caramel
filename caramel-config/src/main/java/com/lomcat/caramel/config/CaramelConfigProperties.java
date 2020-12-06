@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config.option;
+package com.lomcat.caramel.config;
 
 /**
  * <h3>Caramel 配置文件加载选项</h3>
@@ -31,17 +31,16 @@ public class CaramelConfigProperties {
      * 配置文件内容打印选项
      */
     private CaramelConfigEcho echo;
-    /**
-     * 配置文件路径集合，格式为 [$key:][path/]name[.extension]，
-     * 其中 $key、path、extension 部分可选，name 部分必须，
-     * 运行时会被转换为 {@link CaramelConfigPosition}。
-     * $key: 用于为该配置文件指定一个为标识，必须以 $ 号开头，以 : 号结束，若不指定则以 name 为唯一标识，不同配置文件可以指定一样的 key，同 key 的文件内容将合并。
-     */
-    private String[] locations;
-    /**
-     * 配置文件位置描述集合
-     */
-    private CaramelConfigPosition[] positions;
+//    /**
+//     * 多个定位描述字符串，描述配置文件所在位置，每个字符串的格式为：{key}(priority)path/name.extension，多个之间以半角逗号 {@code ","} 分隔。
+//     * 其中 key、priority、path、extension 部分可选，name 部分必须。
+//     * 运行时会被转换为 {@link LocalConfigPosition}。
+//     */
+//    private String[] locations;
+//    /**
+//     * 配置文件位置描述集合
+//     */
+//    private LocalConfigPosition[] positions;
 
     /**
      * 返回是否启用了 Caramel 配置文件加载
@@ -79,42 +78,42 @@ public class CaramelConfigProperties {
         this.echo = echo;
     }
 
-    /**
-     * 设置配置文件路径集合，格式为 [path/]name[.extension]，其中 path 和 extension 部分可选，
-     * 运行时会被转换为 {@link CaramelConfigPosition}，并使用 <code>name</code> 作为 key。
-     *
-     * @param locations 路径集合
-     * @see #setPositions(CaramelConfigPosition[])
-     */
-    public void setLocations(String[] locations) {
-        this.locations = locations;
-    }
-
-    /**
-     * 获取配置文件路径集合
-     *
-     * @return 路径集合
-     */
-    public String[] getLocations() {
-        return locations;
-    }
-
-    /**
-     * 设置配置文件位置描述集合
-     *
-     * @param positions 配置文件位置描述集合
-     * @see #setLocations(String[])
-     */
-    public void setPositions(CaramelConfigPosition[] positions) {
-        this.positions = positions;
-    }
-
-    /**
-     * 获取配置文件位置描述集合
-     *
-     * @return 配置文件位置描述集合
-     */
-    public CaramelConfigPosition[] getPositions() {
-        return positions;
-    }
+//    /**
+//     * 设置配置文件路径集合，格式为 [path/]name[.extension]，其中 path 和 extension 部分可选，
+//     * 运行时会被转换为 {@link LocalConfigPosition}，并使用 <code>name</code> 作为 key。
+//     *
+//     * @param locations 路径集合
+//     * @see #setPositions(LocalConfigPosition[])
+//     */
+//    public void setLocations(String[] locations) {
+//        this.locations = locations;
+//    }
+//
+//    /**
+//     * 获取配置文件路径集合
+//     *
+//     * @return 路径集合
+//     */
+//    public String[] getLocations() {
+//        return locations;
+//    }
+//
+//    /**
+//     * 设置配置文件位置描述集合
+//     *
+//     * @param positions 配置文件位置描述集合
+//     * @see #setLocations(String[])
+//     */
+//    public void setPositions(LocalConfigPosition[] positions) {
+//        this.positions = positions;
+//    }
+//
+//    /**
+//     * 获取配置文件位置描述集合
+//     *
+//     * @return 配置文件位置描述集合
+//     */
+//    public LocalConfigPosition[] getPositions() {
+//        return positions;
+//    }
 }

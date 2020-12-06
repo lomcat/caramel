@@ -18,36 +18,39 @@ package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.assist.CaramelLogger;
-import com.lomcat.caramel.config.option.CaramelConfigEcho;
-import com.lomcat.caramel.config.option.CaramelConfigProperties;
 import com.lomcat.caramel.exception.ConfigLoadException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * <h3>持有 caramel 配置数据</h3>
+ * 配置数据注册器，持有 caramel 配置数据
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class CaramelConfigRegistry {
+public class ConfigRegistry {
 
-    private static final CaramelLogger logger = CaramelLogger.getLogger(CaramelConfigRegistry.class);
+    private static final CaramelLogger logger = CaramelLogger.getLogger(ConfigRegistry.class);
 
+    /** 配置数据注册器选项 */
     private CaramelConfigProperties properties;
 
-    /** 配置数据注册表，结构为 < key, config > */
-    private final Map<String, CaramelConfig> caramelConfigHolder;
+    /** 配置资源定位器 */
+    private List<ConfigLocator> locators;
 
-    public CaramelConfigRegistry() {
-        this.caramelConfigHolder = new ConcurrentHashMap<>();
+    /** 配置数据注册表，结构为 < key, config > */
+    private final Map<String, CaramelConfig> configHolder;
+
+    public ConfigRegistry() {
+        this.configHolder = new ConcurrentHashMap<>();
     }
 
     /**
@@ -57,15 +60,7 @@ public class CaramelConfigRegistry {
      * @return 一个 {@link CaramelConfig} 对象
      */
     public CaramelConfig get(String key) {
-        return caramelConfigHolder.get(key);
-    }
-
-    public CaramelConfigProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(CaramelConfigProperties properties) {
-        this.properties = properties;
+        return configHolder.get(key);
     }
 
     /**
@@ -74,7 +69,7 @@ public class CaramelConfigRegistry {
      * @return 一个 key 为配置数据标识，value 为 {@link CaramelConfig} 的 {@link Map} 对象
      */
     public Map<String, CaramelConfig> getAll() {
-        return Collections.unmodifiableMap(caramelConfigHolder);
+        return Collections.unmodifiableMap(configHolder);
     }
 
     public void init() {
@@ -88,21 +83,49 @@ public class CaramelConfigRegistry {
             return;
         }
 
+        if (CaramelAide.isEmpty(this.locators)) {
+            logger.debug("[Caramel] No caramel config locator.");
+        }
+
         /*
         < 配置数据的key, bunch的集合 > 结构的配置文件集Map，
-        每个bunch中可能含有多个文件，其顺序根据约定优先级从低到高排序，
-        每个key可能对应多个bunch，加载之前，会对同key的bunch根据指定优先级从低到高排序，
+        每个bunch中可能含有多个文件，其顺序根据约定优先级从低到高排序（内层），
+        每个key可能对应多个bunch，加载之前，会对同key的bunch根据指定优先级从低到高排序（外层），
         因此同key下配置文件资源的加载顺序为：
             for 外层 指定 优先级 从低到高 {
                 for 内层 约定 优先级 从低到高
             }
         最终 后加载的高优先级项 将覆盖 先加载的低优先级项
          */
-        Map<String, List<ConfigResourceBunch>> bunchesMap = ConfigLocator.locate(properties.getLocations(), properties.getPositions());
+        Map<String, List<ConfigResourceBunch>> bunchesMap = new HashMap<>();
+
+        // 根据优先级排序定位器
+        Collections.sort(this.locators);
+
+        for (ConfigLocator locator : this.locators) {
+            // 执行定位
+            Map<String, List<ConfigResourceBunch>> locatedBunchesMap = locator.locate();
+
+            if (CaramelAide.isNotEmpty(locatedBunchesMap)) {
+                locatedBunchesMap.forEach((key, bunches) -> {
+                    List<ConfigResourceBunch> cachedBunches = bunchesMap.get(key);
+                    if (cachedBunches != null) {
+                        cachedBunches.addAll(bunches);
+                    } else {
+                        bunchesMap.put(key, bunches);
+                    }
+                });
+            }
+        }
+
         if (CaramelAide.isEmpty(bunchesMap)) {
             logger.debug("[Caramel] No config file.");
             return;
         }
+
+        // TODO-Kweny 通过监听器 加载 远程 bunch
+        // 循环本地 bunch ，同时获取远程的同 key bunch，进行优先级合并
+        // 循环远程剩余的 bunch（如果还有剩）
 
         CaramelConfigEcho echo = properties.getEcho();
 
@@ -158,11 +181,11 @@ public class CaramelConfigRegistry {
             });
 
             // 添加配置数据到注册表
-            caramelConfigHolder.put(key, new CaramelConfig(key, keyConfig.get()));
+            configHolder.put(key, new CaramelConfig(key, keyConfig.get()));
 
             if (echo.isContentEnabled()) {
                 // 启用了 echo.content， 构建 content 日志内容
-                CaramelConfig caramelConfig = caramelConfigHolder.get(key);
+                CaramelConfig caramelConfig = configHolder.get(key);
                 if (caramelConfig != null) {
                     echoBuilder.append(String.format("\tContent of CaramelConfig(%s):\n", caramelConfig.getKey()));
                     caramelConfig.content().entrySet().forEach(entry -> echoBuilder.append("\t\t").append(entry.getKey()).append("=").append(entry.getValue().unwrapped()).append("\n"));
@@ -187,8 +210,23 @@ public class CaramelConfigRegistry {
     }
 
     public void destroy() {
-        caramelConfigHolder.clear();
+        configHolder.clear();
         properties = null;
     }
 
+    public CaramelConfigProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CaramelConfigProperties properties) {
+        this.properties = properties;
+    }
+
+    public List<ConfigLocator> getLocators() {
+        return locators;
+    }
+
+    public void setLocators(List<ConfigLocator> locators) {
+        this.locators = locators;
+    }
 }

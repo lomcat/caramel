@@ -10,5 +10,4 @@ ext {
     PROJECT_DESCRIPTION = 'Caramel Core'
 }
 
-//apply from: 'https://raw.githubusercontent.com/kweny/droaket/master/gradle/bintray-upload-normal.gradle'
-apply from: rootProject.file('_building/bintray-upload-normal.gradle').getAbsolutePath()
+apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

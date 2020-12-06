@@ -1,0 +1,15 @@
+buildscript {
+    repositories {
+        maven { url "https://dl.bintray.com/lomcat/maven/" }
+        maven { url "https://dl.bintray.com/lomcat/maven-test/" }
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        jcenter()
+        mavenCentral()
+        maven { url "https://repo1.maven.org/maven2/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://repo.spring.io/libs-release/" }
+        maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "http://maven.icm.edu.pl/artifactory/repo/" }
+        maven { url "https://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/" }
+    }
+}

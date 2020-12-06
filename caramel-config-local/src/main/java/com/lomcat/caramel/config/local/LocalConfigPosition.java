@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config.option;
+package com.lomcat.caramel.config.local;
 
 /**
- * <h3>Caramel 配置文件的位置描述</h3>
+ * <h3>本地 Caramel 配置文件的定位描述对象</h3>
  *
  * <p>用于描述要引入的外部配置文件的所在位置。</p>
  *
@@ -26,7 +26,7 @@ package com.lomcat.caramel.config.option;
  * @author Kweny
  * @since 0.0.1
  */
-public class CaramelConfigPosition {
+public class LocalConfigPosition {
     /**
      * 配置数据的唯一标识，若不指定则使用 {@link #name}
      */
@@ -51,7 +51,7 @@ public class CaramelConfigPosition {
 
     @Override
     public String toString() {
-        return "CaramelConfigPosition{" +
+        return "ConfigPosition{" +
                 "key='" + key + '\'' +
                 ", priority=" + priority +
                 ", path='" + path + '\'' +

@@ -1,0 +1,21 @@
+archivesBaseName = 'caramel-config-local'
+
+dependencies {
+    api project(':caramel-assist')
+    api caramelCore
+    api caramelConfig
+
+    implementation typesafeConfig
+    implementation slf4jApi
+
+//    implementation 'org.springframework:spring-core:5.3.1'
+//    implementation 'org.springframework:spring-beans:5.3.1'
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-config-local'
+    PUBLISHED_ARTIFACT_ID = 'caramel-config-local'
+    PROJECT_DESCRIPTION = 'Caramel Config Local'
+}
+
+apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

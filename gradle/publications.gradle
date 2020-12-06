@@ -1,0 +1,33 @@
+ext {
+    BINTRAY_REPO = 'maven-test'
+    BINTRAY_NAME = 'caramel'
+    BINTRAY_PUBLISH = true
+    BINTRAY_OVERRIDE = false
+    BINTRAY_DRY_RUN = false
+
+    PUBLISHED_PACKAGING = 'jar'
+    PUBLISHED_GROUP_ID = 'com.lomcat.caramel'
+    PUBLISHED_ARTIFACT_ID = 'caramel'
+    PUBLISHED_VERSION = rootProject.version
+    PUBLISHED_VCS_TAG = rootProject.version
+
+    PROJECT_NAME = 'Caramel'
+    PROJECT_DESCRIPTION = 'Carefree Framework Library'
+    PROJECT_LABELS = ['Caramel', 'Spring', 'SpringBoot']
+    PROJECT_WEBSITE_URL = 'https://github.com/lomcat/caramel'
+    PROJECT_VCS_URL = 'https://github.com/lomcat/caramel.git'
+    PROJECT_ISSUE_TRACKER_URL = 'https://github.com/lomcat/caramel/issues'
+
+    DEVELOPER_ID = 'kweny'
+    DEVELOPER_NAME = 'Kweny'
+    DEVELOPER_EMAIL = 'iamkweny@gmail.com'
+
+    LICENSE_NAME = 'The Apache Software License, Version 2.0'
+    LICENSE_URL = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    LICENSE_DISTRIBUTION = 'rebo'
+    ALL_LICENSES = ["Apache-2.0"]
+
+// mavenCentralSync
+    MCS_ENABLED = false
+    MCS_CLOSE = '0'
+}

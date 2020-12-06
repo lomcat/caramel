@@ -16,9 +16,8 @@
 
 package com.lomcat.caramel.config;
 
-import com.lomcat.caramel.config.option.CaramelConfigPosition;
+import com.lomcat.caramel.config.internel.PriorityComparable;
 import com.lomcat.caramel.core.io.Resource;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -28,8 +27,8 @@ import java.util.List;
  * </p>
  *
  * <p>
- *     每一个 {@link ConfigResourceBunch} 都来源于一个 {@link CaramelConfigPosition}，
- *     而每个 {@link CaramelConfigPosition} 由于未指定路径或扩展名的原因，可能会根据约定路径和约定扩展名查找到多个文件资源，
+ *     每一个 {@link ConfigResourceBunch} 都来源于一个 {@code ”配置定位描述“对象}，
+ *     而每个 {@code ”配置定位描述“对象} 由于未指定路径或扩展名等原因，可能会根据约定路径和约定扩展名查找到多个文件资源，
  *     这些 Resource 在真正被加载为配置数据时，需要根据约定路径和扩展名的优先级进行合并处理。
  * </p>
  *
@@ -42,47 +41,31 @@ import java.util.List;
  * @author Kweny
  * @since 0.0.1
  */
-class ConfigResourceBunch implements Comparable<ConfigResourceBunch> {
+public class ConfigResourceBunch implements PriorityComparable {
     private final String key;
     private final Double priority;
     private final List<Resource> resources;
 
-    static ConfigResourceBunch newInstance(String key, Double priority, List<Resource> resources) {
+    public static ConfigResourceBunch newInstance(String key, Double priority, List<Resource> resources) {
         return new ConfigResourceBunch(key, priority, resources);
     }
 
-    ConfigResourceBunch(String key, Double priority, List<Resource> resources) {
+    public ConfigResourceBunch(String key, Double priority, List<Resource> resources) {
         this.key = key;
         this.priority = priority;
         this.resources = resources;
     }
 
-    String key() {
+    public String key() {
         return this.key;
     }
 
-    Double priority() {
+    @Override
+    public Double priority() {
         return this.priority;
     }
 
     List<Resource> resources() {
         return this.resources;
-    }
-
-    @Override
-    public int compareTo(@NotNull ConfigResourceBunch other) {
-        if (this.priority() == null && other.priority() == null) {
-            return 0;
-        }
-
-        if (this.priority() == null) {
-            return -1;
-        }
-
-        if (other.priority() == null) {
-            return 1;
-        }
-
-        return this.priority().equals(other.priority()) ? 0 : (this.priority() > other.priority() ? 1 : -1);
     }
 }
