@@ -20,7 +20,7 @@
 - [x] caramel-config-local
 - [ ] caramel-config-http
 - [ ] caramel-config-git
-- [ ] caramel-config-hacos
+- [ ] caramel-config-nacos
 - [ ] caramel-config-remote-scc (spring-cloud-config)
 - [ ] caramel-lettuce
 - [ ] caramel-jedis
