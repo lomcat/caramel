@@ -16,8 +16,9 @@
 
 package com.lomcat.caramel.config;
 
-import com.lomcat.caramel.assist.CaramelAide;
-import com.lomcat.caramel.assist.CaramelLogger;
+import com.lomcat.caramel.core.assist.StringAide;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <h3>Caramel 加载的配置文件内容打印</h3>
@@ -27,7 +28,7 @@ import com.lomcat.caramel.assist.CaramelLogger;
  */
 public class CaramelConfigEcho {
 
-    private static final CaramelLogger logger = CaramelLogger.getLogger(CaramelConfigEcho.class);
+    private static final Logger logger = LoggerFactory.getLogger(CaramelConfigEcho.class);
 
     public static final String WAVE_SUMMARY = "summary";
     public static final String WAVE_TRACK = "track";
@@ -84,14 +85,15 @@ public class CaramelConfigEcho {
     }
 
     private void resolveWaves() {
-        if (CaramelAide.isBlank(this.waves)) {
+        if (StringAide.isBlank(this.waves)) {
             return;
         }
         String[] waveSections = this.waves.split(",");
         for (String section : waveSections) {
-            this.summaryEnabled |= CaramelAide.equalsIgnoreCaseAfterTrim(section, WAVE_SUMMARY);
-            this.trackEnabled |= CaramelAide.equalsIgnoreCaseAfterTrim(section, WAVE_TRACK);
-            this.contentEnabled |= CaramelAide.equalsIgnoreCaseAfterTrim(section, WAVE_CONTENT);
+            section = StringAide.trim(section);
+            this.summaryEnabled |= StringAide.equalsIgnoreCase(section, WAVE_SUMMARY);
+            this.trackEnabled |= StringAide.equalsIgnoreCase(section, WAVE_TRACK);
+            this.contentEnabled |= StringAide.equalsIgnoreCase(section, WAVE_CONTENT);
         }
     }
 }

@@ -1,5 +1,4 @@
 
-include 'caramel-assist'
 include 'caramel-core'
 include 'caramel-config'
 include 'caramel-config-local'

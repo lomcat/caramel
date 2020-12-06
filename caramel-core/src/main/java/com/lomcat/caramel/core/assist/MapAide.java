@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.exception;
+package com.lomcat.caramel.core.assist;
+
+import java.util.Map;
 
 /**
- * Caramel 配置文件加载异常
+ * TODO-Kweny MapAide
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class ConfigLoadException extends RuntimeException {
-    private static final long serialVersionUID = 7651931054812888311L;
+public class MapAide {
 
-    public ConfigLoadException() {
-        super();
+    public static boolean isEmpty(final Map<?, ?> map) {
+        return map == null || map.isEmpty();
     }
 
-    public ConfigLoadException(String message) {
-        super(message);
+    public static boolean isNotEmpty(final Map<?, ?> map) {
+        return !isEmpty(map);
     }
 
-    public ConfigLoadException(String message, Throwable cause) {
-        super(message, cause);
+    public static <K, V> void clear(final Map<K, V> map) {
+        if (isNotEmpty(map)) {
+            map.clear();
+        }
     }
-
-    public ConfigLoadException(Throwable cause) {
-        super(cause);
-    }
-
 }

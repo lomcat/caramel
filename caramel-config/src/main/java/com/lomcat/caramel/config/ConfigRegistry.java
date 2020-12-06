@@ -16,11 +16,13 @@
 
 package com.lomcat.caramel.config;
 
-import com.lomcat.caramel.assist.CaramelAide;
-import com.lomcat.caramel.assist.CaramelLogger;
-import com.lomcat.caramel.exception.ConfigLoadException;
+import com.lomcat.caramel.config.exception.ConfigLoadException;
+import com.lomcat.caramel.core.assist.CollectionAide;
+import com.lomcat.caramel.core.assist.MapAide;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -38,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ConfigRegistry {
 
-    private static final CaramelLogger logger = CaramelLogger.getLogger(ConfigRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigRegistry.class);
 
     /** 配置数据注册器选项 */
     private CaramelConfigProperties properties;
@@ -83,7 +85,7 @@ public class ConfigRegistry {
             return;
         }
 
-        if (CaramelAide.isEmpty(this.locators)) {
+        if (CollectionAide.isEmpty(this.locators)) {
             logger.debug("[Caramel] No caramel config locator.");
         }
 
@@ -106,7 +108,7 @@ public class ConfigRegistry {
             // 执行定位
             Map<String, List<ConfigResourceBunch>> locatedBunchesMap = locator.locate();
 
-            if (CaramelAide.isNotEmpty(locatedBunchesMap)) {
+            if (MapAide.isNotEmpty(locatedBunchesMap)) {
                 locatedBunchesMap.forEach((key, bunches) -> {
                     List<ConfigResourceBunch> cachedBunches = bunchesMap.get(key);
                     if (cachedBunches != null) {
@@ -118,7 +120,7 @@ public class ConfigRegistry {
             }
         }
 
-        if (CaramelAide.isEmpty(bunchesMap)) {
+        if (MapAide.isEmpty(bunchesMap)) {
             logger.debug("[Caramel] No config file.");
             return;
         }

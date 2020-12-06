@@ -16,13 +16,15 @@
 
 package com.lomcat.caramel.config.local;
 
-import com.lomcat.caramel.assist.CaramelAide;
 import com.lomcat.caramel.config.ConfigLocator;
 import com.lomcat.caramel.config.ConfigResourceBunch;
+import com.lomcat.caramel.config.exception.ConfigLocateException;
+import com.lomcat.caramel.core.assist.ArrayAide;
+import com.lomcat.caramel.core.assist.CollectionAide;
+import com.lomcat.caramel.core.assist.StringAide;
 import com.lomcat.caramel.core.io.DefaultResourceLoader;
 import com.lomcat.caramel.core.io.Resource;
 import com.lomcat.caramel.core.io.ResourceLoader;
-import com.lomcat.caramel.exception.ConfigLocateException;
 
 import java.util.*;
 
@@ -84,14 +86,14 @@ public class LocalConfigLocator implements ConfigLocator {
         List<LocalConfigPosition> allPositions = new LinkedList<>();
 
         // CaramelConfigProperties#locations
-        if (CaramelAide.isNotEmpty(locations)) {
-            Arrays.stream(locations).map(CaramelAide::trim).forEach(originLocation -> {
+        if (ArrayAide.isNotEmpty(locations)) {
+            Arrays.stream(locations).map(StringAide::trim).forEach(originLocation -> {
                 LocalConfigPosition position = new LocalConfigPosition();
                 String location = originLocation;
 
                 // 提取 key 和 priority（如果有的话）
                 LocationSegmentPickup pickup = LocationSegmentPickup.newInstance(location).pickup();
-                if (CaramelAide.isNotBlank(pickup.key)) {
+                if (StringAide.isNotBlank(pickup.key)) {
                     position.setKey(pickup.key);
                 }
                 if (pickup.priority != null) {
@@ -118,12 +120,12 @@ public class LocalConfigLocator implements ConfigLocator {
                     position.setName(location);
                 }
 
-                if (CaramelAide.isBlank(position.getName())) {
+                if (StringAide.isBlank(position.getName())) {
                     throw new ConfigLocateException(String.format("[Caramel] Incomplete location (a name is required): %s", originLocation));
                 }
 
                 // 若未指定 key，则以 name 为 key
-                if (CaramelAide.isBlank(position.getKey())) {
+                if (StringAide.isBlank(position.getKey())) {
                     position.setKey(position.getName());
                 }
 
@@ -132,14 +134,14 @@ public class LocalConfigLocator implements ConfigLocator {
         }
 
         // CaramelConfigProperties#positions
-        if (CaramelAide.isNotEmpty(positions)) {
+        if (ArrayAide.isNotEmpty(positions)) {
             Arrays.stream(positions).forEach(position -> {
-                if (CaramelAide.isBlank(position.getName())) {
+                if (StringAide.isBlank(position.getName())) {
                     throw new ConfigLocateException(String.format("[Caramel] Incomplete location (a name is required): %s", position));
                 }
 
                 // 若未指定 key，则以 name 为 key
-                if (CaramelAide.isBlank(position.getKey())) {
+                if (StringAide.isBlank(position.getKey())) {
                     position.setKey(position.getName());
                 }
 
@@ -175,10 +177,10 @@ public class LocalConfigLocator implements ConfigLocator {
     private static Map<String, List<ConfigResourceBunch>> resolveConfigResourceBunches(List<LocalConfigPosition> positions) {
         Map<String, List<ConfigResourceBunch>> bunchesMap = new HashMap<>();
 
-        if (CaramelAide.isNotEmpty(positions)) {
+        if (CollectionAide.isNotEmpty(positions)) {
             positions.forEach(position -> {
                 List<String> paths = new LinkedList<>();
-                if (CaramelAide.isNotBlank(position.getPath())) {
+                if (StringAide.isNotBlank(position.getPath())) {
                     paths.add(position.getPath());
                 } else {
                     // 若未限定配置文件所在根目录，则遍历 DEFAULT_PATHS 中的默认根目录进行查找
@@ -186,7 +188,7 @@ public class LocalConfigLocator implements ConfigLocator {
                 }
 
                 List<String> extensions = new LinkedList<>();
-                if (CaramelAide.isNotBlank(position.getExtension())) {
+                if (StringAide.isNotBlank(position.getExtension())) {
                     extensions.add(position.getExtension());
                 } else {
                     // 若未限定配置文件扩展名，则遍历 DEFAULT_EXTENSIONS 中的默认扩展名进行查找
@@ -195,7 +197,7 @@ public class LocalConfigLocator implements ConfigLocator {
 
                 // 根据路径和扩展名查找配置资源
                 List<Resource> resources = resolveResources(position.getName(), paths, extensions);
-                if (CaramelAide.isNotEmpty(resources)) {
+                if (CollectionAide.isNotEmpty(resources)) {
                     ConfigResourceBunch bunch = ConfigResourceBunch.newInstance(position.getKey(), position.getPriority(), resources);
                     List<ConfigResourceBunch> cachedBunches = bunchesMap.computeIfAbsent(bunch.key(), k -> new ArrayList<>());
                     cachedBunches.add(bunch);
@@ -284,29 +286,29 @@ public class LocalConfigLocator implements ConfigLocator {
             if (isKeySetup) {
                 String keySegment = originalLocation.substring(keyPrefixIndex, keySuffixIndex + 1);
                 String keyString = keySegment.replace(KEY_PREFIX, "").replace(KEY_SUFFIX, "");
-                if (CaramelAide.isNotBlank(keyString)) {
+                if (StringAide.isNotBlank(keyString)) {
                     // 空串、空白字符等同于未指定 key，将使用 name 作为 key
                     this.key = keyString;
                 }
-                this.location = CaramelAide.trim(location.replace(keySegment, ""));
+                this.location = StringAide.trim(location.replace(keySegment, ""));
             }
 
             if (isPrioritySetup) {
                 String prioritySegment = originalLocation.substring(priorityPrefixIndex, prioritySuffixIndex + 1);
                 String priorityString = prioritySegment.replace(PRIORITY_PREFIX, "").replace(PRIORITY_SUFFIX, "");
-                if (CaramelAide.isNotBlank(priorityString)) {
+                if (StringAide.isNotBlank(priorityString)) {
                     // 空串、单个或多个空白字符等同于未指定优先级，因此对于空串和空白字符不做处理（priority = null）
                     try {
-                        this.priority = Double.parseDouble(CaramelAide.trim(priorityString));
+                        this.priority = Double.parseDouble(StringAide.trim(priorityString));
                     } catch (NumberFormatException e) {
                         throw new ConfigLocateException(String.format("[Caramel] Malformed location (priority must be a number): %s", originalLocation), e);
                     }
                 }
-                this.location = CaramelAide.trim(location.replace(prioritySegment, ""));
+                this.location = StringAide.trim(location.replace(prioritySegment, ""));
             }
 
             // location 去除 key 和 priority 部分无内容
-            if (CaramelAide.isBlank(this.location)) {
+            if (StringAide.isBlank(this.location)) {
                 throw new ConfigLocateException(String.format("[Caramel] Incomplete location (a name is required): %s", originalLocation));
             }
 

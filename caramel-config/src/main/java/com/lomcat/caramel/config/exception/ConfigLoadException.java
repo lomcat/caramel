@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.exception;
+package com.lomcat.caramel.config.exception;
 
 /**
- * Caramel 配置文件定位异常
+ * Caramel 配置文件加载异常
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class ConfigLocateException extends RuntimeException {
-    private static final long serialVersionUID = -220143062276159395L;
+public class ConfigLoadException extends RuntimeException {
+    private static final long serialVersionUID = 7651931054812888311L;
 
-    public ConfigLocateException() {
+    public ConfigLoadException() {
         super();
     }
 
-    public ConfigLocateException(String message) {
+    public ConfigLoadException(String message) {
         super(message);
     }
 
-    public ConfigLocateException(String message, Throwable cause) {
+    public ConfigLoadException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ConfigLocateException(Throwable cause) {
+    public ConfigLoadException(Throwable cause) {
         super(cause);
     }
 
