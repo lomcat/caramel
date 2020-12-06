@@ -42,4 +42,5 @@ public interface PriorityComparable extends Comparable<PriorityComparable> {
 
         return this.priority().equals(other.priority()) ? 0 : (this.priority() > other.priority() ? 1 : -1);
     }
+
 }
