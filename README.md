@@ -6,9 +6,7 @@
 
 **Caramel** - Carefree Framework Library
 
-`美音` /'kærəm(ə)l/
-
-`英音` /'kærəmɛl/
+`发音` /'kærəmɛl/、/'kærəm(ə)l/
 
 `译意` 焦糖；焦糖糖果；饴糖
 

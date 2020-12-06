@@ -49,17 +49,6 @@ public class LocalConfigPosition {
      */
     private String extension;
 
-    @Override
-    public String toString() {
-        return "ConfigPosition{" +
-                "key='" + key + '\'' +
-                ", priority=" + priority +
-                ", path='" + path + '\'' +
-                ", name='" + name + '\'' +
-                ", extension='" + extension + '\'' +
-                '}';
-    }
-
     public String getKey() {
         return key;
     }

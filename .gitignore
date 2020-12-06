@@ -39,5 +39,3 @@ hs_err_pid*
 .DS_Store
 
 # custom
-_backup
-local-*
