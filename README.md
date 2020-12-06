@@ -21,7 +21,9 @@
 - [ ] caramel-config-http
 - [ ] caramel-config-git
 - [ ] caramel-config-nacos
-- [ ] caramel-config-remote-scc (spring-cloud-config)
+- [ ] caramel-config-scc (spring-cloud-config)
+- [ ] caramel-config-apollo
+- [ ] caramel-config-zookeeper
 - [ ] caramel-lettuce
 - [ ] caramel-jedis
 - [ ] caramel-spring-redis
