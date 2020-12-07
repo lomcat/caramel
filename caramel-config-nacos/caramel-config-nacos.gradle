@@ -1,0 +1,17 @@
+archivesBaseName = 'caramel-config-nacos'
+
+dependencies {
+    api caramelCore
+    api caramelConfig
+
+    implementation slf4jApi
+    implementation typesafeConfig
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-config-nacos'
+    PUBLISHED_ARTIFACT_ID = 'caramel-config-nacos'
+    PROJECT_DESCRIPTION = 'Caramel Config from Nacos'
+}
+
+apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

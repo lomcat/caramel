@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.core.assist;
+package com.lomcat.caramel.core.io;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,10 +22,20 @@ import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
- * @author Kweny
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/util/ReflectionUtils.java">
+ *     org.springframework.util.ReflectionUtils
+ * </a>
+ *
+ * @author Juergen Hoeller
+ * @author Rob Harrop
+ * @author Rod Johnson
+ * @author Costin Leau
+ * @author Sam Brannen
+ * @author Chris Beams
  * @since 0.0.1
  */
-public class ReflectionAide {
+public class ReflectionUtils {
 
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 

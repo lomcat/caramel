@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.core.assist;
+package com.lomcat.caramel.core.io;
+
+import com.lomcat.caramel.core.assist.AssertAide;
 
 import java.io.Closeable;
 import java.io.Externalizable;
@@ -23,10 +25,18 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
- * @author Kweny
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/util/ClassUtils.java">
+ *     org.springframework.util.ClassUtils
+ * </a>
+ *
+ * @author Juergen Hoeller
+ * @author Keith Donald
+ * @author Rob Harrop
+ * @author Sam Brannen
  * @since 0.0.1
  */
-public abstract class ClassAide {
+public abstract class ClassUtils {
 
     /** 数组类名称的后缀：{@code "[]"} */
     public static final String ARRAY_SUFFIX = "[]";
@@ -137,7 +147,7 @@ public abstract class ClassAide {
      * <p>
      *     获取默认的 ClassLoader。
      *     通常是线程上下文 ClassLoader；
-     *     若没有，则返回该类 {@link ClassAide} 的 ClassLoader：{@code ClassAide.class.getClassLoader()}；
+     *     若没有，则返回该类 {@link ClassUtils} 的 ClassLoader：{@code ClassAide.class.getClassLoader()}；
      *     若仍没有（null），则可能是引导类加载器，此时返回系统类加载器：{@code ClassLoader.getSystemClassLoader()}；
      *     若还没有，返回 null。
      * </p>
@@ -155,7 +165,7 @@ public abstract class ClassAide {
         }
         if (loader == null) {
             // 无线程上下文类加载器 -> 备用方式1：使用当前类的类加载器
-            loader = ClassAide.class.getClassLoader();
+            loader = ClassUtils.class.getClassLoader();
 
             if (loader == null) {
                 // 当备用1的 getClassLoader() 返回 null 时表示是引导类加载器 -> 备用方式2：返回系统类加载器

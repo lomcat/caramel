@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,17 @@ import java.net.URI;
 import java.net.URL;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/VfsResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/VfsResource.java">
  *     org.springframework.core.io.VfsResource
  * </a>
  *
  * <p>基于 JBoss VFS 的 {@link Resource} 实现。</p>
  *
- * @author Kweny
+ * @author Ales Justin
+ * @author Juergen Hoeller
+ * @author Costin Leau
+ * @author Sam Brannen
  * @since 0.0.1
  */
 public class VfsResource extends AbstractResource {

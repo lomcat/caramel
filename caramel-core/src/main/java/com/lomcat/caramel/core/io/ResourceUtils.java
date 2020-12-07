@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.core.assist;
+package com.lomcat.caramel.core.io;
+
+import com.lomcat.caramel.core.assist.AssertAide;
+import com.lomcat.caramel.core.assist.StringAide;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,15 +26,15 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/util/ResourceUtils.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/util/ResourceUtils.java">
  *     org.springframework.util.ResourceUtils
  * </a>
  *
- * @author Kweny
+ * @author Juergen Hoeller
  * @since 0.0.1
  */
-public class ResourceAide {
+public class ResourceUtils {
 
     /** 类路径的伪 URL 前缀："classpath:" */
     public static final String URL_PREFIX_CLASSPATH = "classpath:";
@@ -123,7 +126,7 @@ public class ResourceAide {
         AssertAide.notNull(resourceLocation, "Resource location must not be null");
         if (resourceLocation.startsWith(URL_PREFIX_CLASSPATH)) {
             String path = resourceLocation.substring(URL_PREFIX_CLASSPATH.length());
-            ClassLoader cl = ClassAide.getDefaultClassLoader();
+            ClassLoader cl = ClassUtils.getDefaultClassLoader();
             URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
             if (url == null) {
                 String description = "class path resource [" + path + "]";
@@ -154,7 +157,7 @@ public class ResourceAide {
         if (resourceLocation.startsWith(URL_PREFIX_CLASSPATH)) {
             String path = resourceLocation.substring(URL_PREFIX_CLASSPATH.length());
             String description = "class path resource [" + path + "]";
-            ClassLoader cl = ClassAide.getDefaultClassLoader();
+            ClassLoader cl = ClassUtils.getDefaultClassLoader();
             URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
             if (url == null) {
                 throw new FileNotFoundException(description + " cannot be resolved to absolute file path because it does not exist");

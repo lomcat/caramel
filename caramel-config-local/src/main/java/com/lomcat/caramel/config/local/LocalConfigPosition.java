@@ -17,9 +17,7 @@
 package com.lomcat.caramel.config.local;
 
 /**
- * <h3>本地 Caramel 配置文件的定位描述对象</h3>
- *
- * <p>用于描述要引入的外部配置文件的所在位置。</p>
+ * <p>本地 Caramel 配置文件的定位描述对象，用于描述要引入的外部配置文件的所在位置。</p>
  *
  * <p>包括文件名、扩展名、所在目录，以及该配置文件在整个 caramel config 上下文中的唯一标识。</p>
  *
@@ -48,6 +46,11 @@ public class LocalConfigPosition {
      * 配置文件的扩展名
      */
     private String extension;
+    /**
+     * 开启当前定位描述对象的自动刷新，将覆盖全局配置。
+     * true-开启；false-关闭；null-使用全局配置
+     */
+    private Boolean refreshEnabled;
 
     public String getKey() {
         return key;
@@ -87,5 +90,13 @@ public class LocalConfigPosition {
 
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public Boolean getRefreshEnabled() {
+        return refreshEnabled;
+    }
+
+    public void setRefreshEnabled(Boolean refreshEnabled) {
+        this.refreshEnabled = refreshEnabled;
     }
 }

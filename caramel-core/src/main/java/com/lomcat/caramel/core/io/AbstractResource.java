@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package com.lomcat.caramel.core.io;
 
-import com.lomcat.caramel.core.assist.ResourceAide;
 import com.lomcat.caramel.core.assist.StringAide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/AbstractResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/AbstractResource.java">
  *     org.springframework.core.io.AbstractResource
  * </a>
  *
@@ -49,7 +48,8 @@ import java.nio.channels.ReadableByteChannel;
  *     {@link #toString()} 方法将返回 {@link #getDescription()} 的结果。
  * </p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
+ * @author Sam Brannen
  * @since 0.0.1
  */
 public abstract class AbstractResource implements Resource {
@@ -120,7 +120,7 @@ public abstract class AbstractResource implements Resource {
     public URI getURI() throws IOException {
         URL url = getURL();
         try {
-            return ResourceAide.toURI(url);
+            return ResourceUtils.toURI(url);
         } catch (URISyntaxException ex) {
             throw new IllegalArgumentException("Invalid URI [" + url + "]", ex);
         }

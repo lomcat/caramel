@@ -34,7 +34,7 @@ public interface ConfigLocator extends PriorityComparable {
      * 若未指定定位器优先级，则以定位器的创建顺序为准（不保证）。
      */
     @Override
-    default Double priority() {
+    default Double getPriority() {
         return null;
     }
 

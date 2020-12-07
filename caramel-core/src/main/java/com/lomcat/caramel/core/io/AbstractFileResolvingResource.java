@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  */
 
 package com.lomcat.caramel.core.io;
-
-import com.lomcat.caramel.core.assist.ResourceAide;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,8 +29,8 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.StandardOpenOption;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/AbstractFileResolvingResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/AbstractFileResolvingResource.java">
  *     org.springframework.core.io.AbstractFileResolvingResource
  * </a>
  *
@@ -44,7 +42,7 @@ import java.nio.file.StandardOpenOption;
  *     在 URL 中检测 "file" 协议以及 JBoss 的 "vfs" 协议，从而解析为文件系统中的文件引用。
  * </p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
  * @since 0.0.1
  */
 public abstract class AbstractFileResolvingResource extends AbstractResource {
@@ -53,7 +51,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     public boolean exists() {
         try {
             URL url = getURL();
-            if (ResourceAide.isFileURL(url)) {
+            if (ResourceUtils.isFileURL(url)) {
                 // 文件系统
                 return getFile().exists();
             } else {
@@ -90,7 +88,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     public boolean isReadable() {
         try {
             URL url = getURL();
-            if (ResourceAide.isFileURL(url)) {
+            if (ResourceUtils.isFileURL(url)) {
                 // 文件系统
                 File file = getFile();
                 return file.canRead() && !file.isDirectory();
@@ -126,10 +124,10 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     public boolean isFile() {
         try {
             URL url = getURL();
-            if (url.getProtocol().startsWith(ResourceAide.URL_PROTOCOL_VFS)) {
+            if (url.getProtocol().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
                 return VfsResourceDelegate.getResource(url).isFile();
             }
-            return ResourceAide.URL_PROTOCOL_FILE.equals(url.getProtocol());
+            return ResourceUtils.URL_PROTOCOL_FILE.equals(url.getProtocol());
         } catch (IOException ex) {
             return false;
         }
@@ -138,15 +136,15 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     /**
      * 此实现返回底层类路径资源的 File 引用，前提是它指向的是一个文件系统中的文件。
      *
-     * @see ResourceAide#getFile(URL, String)
+     * @see ResourceUtils#getFile(URL, String)
      */
     @Override
     public File getFile() throws IOException {
         URL url = getURL();
-        if (url.getProtocol().startsWith(ResourceAide.URL_PROTOCOL_VFS)) {
+        if (url.getProtocol().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
             return VfsResourceDelegate.getResource(url).getFile();
         }
-        return ResourceAide.getFile(url, getDescription());
+        return ResourceUtils.getFile(url, getDescription());
     }
 
     /**
@@ -156,10 +154,10 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
      */
     protected boolean isFile(URI uri) {
         try {
-            if (uri.getScheme().startsWith(ResourceAide.URL_PROTOCOL_VFS)) {
+            if (uri.getScheme().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
                 return VfsResourceDelegate.getResource(uri).isFile();
             }
-            return ResourceAide.URL_PROTOCOL_FILE.equals(uri.getScheme());
+            return ResourceUtils.URL_PROTOCOL_FILE.equals(uri.getScheme());
         } catch (IOException ex) {
             return false;
         }
@@ -168,13 +166,13 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     /**
      * 如果指定的 URL 指向的是文件系统中的文件，则返回其 File 引用。
      *
-     * @see ResourceAide#getFile(URL, String) 
+     * @see ResourceUtils#getFile(URL, String)
      */
     protected File getFile(URI uri) throws IOException {
-        if (uri.getScheme().startsWith(ResourceAide.URL_PROTOCOL_VFS)) {
+        if (uri.getScheme().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
             return VfsResourceDelegate.getResource(uri).getFile();
         }
-        return ResourceAide.getFile(uri, getDescription());
+        return ResourceUtils.getFile(uri, getDescription());
     }
 
     /**
@@ -194,7 +192,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     @Override
     public long contentLength() throws IOException {
         URL url = getURL();
-        if (ResourceAide.isFileURL(url)) {
+        if (ResourceUtils.isFileURL(url)) {
             File file = getFile();
             long length = file.length();
             if (length == 0L && !file.exists()) {
@@ -212,7 +210,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     public long lastModified() throws IOException {
         URL url = getURL();
         boolean fileCheck = false;
-        if (ResourceAide.isFileURL(url) || ResourceAide.isJarURL(url)) {
+        if (ResourceUtils.isFileURL(url) || ResourceUtils.isJarURL(url)) {
             fileCheck = true;
             try {
                 File fileToCheck = getFileForLastModifiedCheck();
@@ -239,12 +237,12 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
     @Override
     protected File getFileForLastModifiedCheck() throws IOException {
         URL url = getURL();
-        if (ResourceAide.isJarURL(url)) {
-            URL actualUrl = ResourceAide.extractArchiveURL(url);
-            if (actualUrl.getProtocol().startsWith(ResourceAide.URL_PROTOCOL_VFS)) {
+        if (ResourceUtils.isJarURL(url)) {
+            URL actualUrl = ResourceUtils.extractArchiveURL(url);
+            if (actualUrl.getProtocol().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
                 return VfsResourceDelegate.getResource(actualUrl).getFile();
             }
-            return ResourceAide.getFile(actualUrl, "Jar URL");
+            return ResourceUtils.getFile(actualUrl, "Jar URL");
         } else {
             return getFile();
         }
@@ -256,7 +254,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
      *     该 URLConnection 是在 {@link #exists()}、{@link #contentLength()} 或 {@link #lastModified()} 调用过程中获得的。
      * </p>
      * <p>
-     *     调用 {@link ResourceAide#useCachesIfNecessary(URLConnection)}，
+     *     调用 {@link ResourceUtils#useCachesIfNecessary(URLConnection)}，
      *     并在可能的情况下委派给 {@link #customizeConnection(HttpURLConnection)}。
      *     可以在子类中覆盖。
      * </p>
@@ -265,7 +263,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
      * @throws IOException 如果从 URLConnection 的方法中抛出异常
      */
     protected void customizeConnection(URLConnection conn) throws IOException {
-        ResourceAide.useCachesIfNecessary(conn);
+        ResourceUtils.useCachesIfNecessary(conn);
         if (conn instanceof HttpURLConnection) {
             customizeConnection((HttpURLConnection) conn);
         }

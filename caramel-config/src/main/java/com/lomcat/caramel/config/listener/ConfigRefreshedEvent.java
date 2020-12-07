@@ -14,33 +14,18 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config.internel;
+package com.lomcat.caramel.config.listener;
 
-import org.jetbrains.annotations.NotNull;
+import com.lomcat.caramel.config.CaramelConfig;
 
 /**
+ * TODO-Kweny ConfigRefreshEvent
+ *
  * @author Kweny
  * @since 0.0.1
  */
-public interface PriorityComparable extends Comparable<PriorityComparable> {
-
-    Double getPriority();
-
-    @Override
-    default int compareTo(@NotNull PriorityComparable other) {
-        if (this.getPriority() == null && other.getPriority() == null) {
-            return 0;
-        }
-
-        if (this.getPriority() == null) {
-            return -1;
-        }
-
-        if (other.getPriority() == null) {
-            return 1;
-        }
-
-        return this.getPriority().equals(other.getPriority()) ? 0 : (this.getPriority() > other.getPriority() ? 1 : -1);
-    }
-
+public class ConfigRefreshedEvent {
+    private String key;
+    private CaramelConfig oldConfig;
+    private CaramelConfig newConfig;
 }

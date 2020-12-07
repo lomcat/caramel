@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,8 +26,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.*;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/PathResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/PathResource.java">
  *     org.springframework.core.io.PathResource
  * </a>
  *
@@ -37,7 +37,8 @@ import java.nio.file.*;
  *     同时实现了 {@link WritableResource} 接口。
  * </p>
  *
- * @author Kweny
+ * @author Philippe Marschall
+ * @author Juergen Hoeller
  * @since 0.0.1
  */
 public class PathResource extends AbstractResource implements WritableResource {

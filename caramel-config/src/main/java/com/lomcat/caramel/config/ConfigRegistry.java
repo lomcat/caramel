@@ -42,8 +42,18 @@ public class ConfigRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigRegistry.class);
 
-    /** 配置数据注册器选项 */
-    private CaramelConfigProperties properties;
+    /**
+     * 是否启用 Caramel 配置文件加载
+     */
+    private boolean enabled;
+    /**
+     * 配置文件内容打印选项
+     */
+    private CaramelConfigEcho echo;
+    /**
+     * 是否开启自动刷新（全局，为被每个定位对象的配置覆盖）
+     */
+    private boolean refreshEnabled;
 
     /** 配置资源定位器 */
     private List<ConfigLocator> locators;
@@ -75,12 +85,7 @@ public class ConfigRegistry {
     }
 
     public void init() {
-        if (properties == null) {
-            logger.debug("[Caramel] Caramel config properties object is null.");
-            return;
-        }
-
-        if (!properties.isEnabled()) {
+        if (!this.enabled) {
             logger.debug("[Caramel] Caramel config is not enabled.");
             return;
         }
@@ -121,7 +126,7 @@ public class ConfigRegistry {
         }
 
         if (MapAide.isEmpty(bunchesMap)) {
-            logger.debug("[Caramel] No config file.");
+            logger.debug("[Caramel] No config resource.");
             return;
         }
 
@@ -129,7 +134,7 @@ public class ConfigRegistry {
         // 循环本地 bunch ，同时获取远程的同 key bunch，进行优先级合并
         // 循环远程剩余的 bunch（如果还有剩）
 
-        CaramelConfigEcho echo = properties.getEcho();
+        CaramelConfigEcho echo = this.echo != null ? this.echo : new CaramelConfigEcho();
 
         bunchesMap.forEach((key, resourceBunches) -> {
 
@@ -145,7 +150,7 @@ public class ConfigRegistry {
             AtomicReference<Config> keyConfig = new AtomicReference<>();
             resourceBunches.forEach(bunch -> {
                 // 加载合并同一个 bunch 中的多个 resource
-                bunch.resources().forEach(resource -> {
+                bunch.getResources().forEach(resource -> {
                     if (echo.isSummaryEnabled()) {
                         // 启用了 echo.summary，构建 summary 日志内容
                         echoBuilder.append(String.format("\t\tCaramelConfig(druid) <- %s\n", resource));
@@ -157,7 +162,7 @@ public class ConfigRegistry {
                             if (echo.isTrackEnabled()) {
                                 // 启用了 echo.track， 构建 track 日志内容
                                 resourceConfig.entrySet().forEach(entry ->
-                                        echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped())));
+                                        echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.getKey(), entry.getKey(), entry.getValue().unwrapped())));
                             }
 
                             keyConfig.set(resourceConfig);
@@ -166,9 +171,9 @@ public class ConfigRegistry {
                                 if (echo.isTrackEnabled()) {
                                     // 启用了 echo.track， 构建 track 日志内容
                                     if (keyConfig.get().hasPath(entry.getKey())) {
-                                        echoBuilder.append(String.format("\t\t\tRenew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
+                                        echoBuilder.append(String.format("\t\t\tRenew property into CaramelConfig(%s) <- %s=%s\n", bunch.getKey(), entry.getKey(), entry.getValue().unwrapped()));
                                     } else {
-                                        echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.key(), entry.getKey(), entry.getValue().unwrapped()));
+                                        echoBuilder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunch.getKey(), entry.getKey(), entry.getValue().unwrapped()));
                                     }
                                 }
 
@@ -213,15 +218,30 @@ public class ConfigRegistry {
 
     public void destroy() {
         configHolder.clear();
-        properties = null;
     }
 
-    public CaramelConfigProperties getProperties() {
-        return properties;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setProperties(CaramelConfigProperties properties) {
-        this.properties = properties;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public CaramelConfigEcho getEcho() {
+        return echo;
+    }
+
+    public void setEcho(CaramelConfigEcho echo) {
+        this.echo = echo;
+    }
+
+    public boolean isRefreshEnabled() {
+        return refreshEnabled;
+    }
+
+    public void setRefreshEnabled(boolean refreshEnabled) {
+        this.refreshEnabled = refreshEnabled;
     }
 
     public List<ConfigLocator> getLocators() {

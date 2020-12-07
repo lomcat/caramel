@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  */
 
 package com.lomcat.caramel.core.io;
-
-import com.lomcat.caramel.core.assist.ResourceAide;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/FileUrlResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/FileUrlResource.java">
  *     org.springframework.core.io.FileUrlResource
  * </a>
  *
@@ -44,7 +42,7 @@ import java.nio.file.StandardOpenOption;
  *     如果是从 {@link java.io.File} 句柄或 NIO {@link java.nio.file.Path} 直接构造，请考虑使用 {@link FileSystemResource}。
  * </p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
  * @since 0.0.1
  */
 public class FileUrlResource extends UrlResource implements WritableResource {
@@ -57,7 +55,7 @@ public class FileUrlResource extends UrlResource implements WritableResource {
      * <p>注意，这不会强制将 "file" 作为 URL 协议。如果已知某个协议可以解析为文件，则可以接受该协议。
      *
      * @param url 一个 URL
-     * @see ResourceAide#isFileURL(URL)
+     * @see ResourceUtils#isFileURL(URL)
      * @see #getFile()
      */
     public FileUrlResource(URL url) {
@@ -72,10 +70,10 @@ public class FileUrlResource extends UrlResource implements WritableResource {
      * @param location 位置（即该协议中的文件路径）
      * @throws MalformedURLException 如果给定的位置不符合 URL 规范
      * @see UrlResource#UrlResource(String, String)
-     * @see ResourceAide#URL_PROTOCOL_FILE
+     * @see ResourceUtils#URL_PROTOCOL_FILE
      */
     public FileUrlResource(String location) throws MalformedURLException {
-        super(ResourceAide.URL_PROTOCOL_FILE, location);
+        super(ResourceUtils.URL_PROTOCOL_FILE, location);
     }
 
     @Override

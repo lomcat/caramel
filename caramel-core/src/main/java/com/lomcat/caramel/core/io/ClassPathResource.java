@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,6 @@
 package com.lomcat.caramel.core.io;
 
 import com.lomcat.caramel.core.assist.AssertAide;
-import com.lomcat.caramel.core.assist.ClassAide;
-import com.lomcat.caramel.core.assist.ResourceAide;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,8 +24,8 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/ClassPathResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/ClassPathResource.java">
  *     org.springframework.core.io.ClassPathResource
  * </a>
  *
@@ -39,7 +37,8 @@ import java.net.URL;
  *     类路径资源支持解析为 URL。此外如果是位于文件系统中，而不是 JAR 中的资源，也支持将其解析为 {@link java.io.File}。
  * </p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
+ * @author Sam Brannen
  * @since 0.0.1
  * @see ClassLoader#getResourceAsStream(String)
  * @see Class#getResourceAsStream(String)
@@ -58,7 +57,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      *
      * @param path classpath 下的绝对路径
      * @see java.lang.ClassLoader#getResourceAsStream(String)
-     * @see ClassAide#getDefaultClassLoader()
+     * @see ClassUtils#getDefaultClassLoader()
      */
     public ClassPathResource(String path) {
         this(path, (ClassLoader) null);
@@ -74,12 +73,12 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      */
     public ClassPathResource(String path, ClassLoader classLoader) {
         AssertAide.notNull(path, "Path must not be null");
-        String pathToUse = ResourceAide.normalizePath(path);
+        String pathToUse = ResourceUtils.normalizePath(path);
         if (pathToUse.startsWith("/")) {
             pathToUse = pathToUse.substring(1);
         }
         this.path = pathToUse;
-        this.classLoader = (classLoader != null ? classLoader : ClassAide.getDefaultClassLoader());
+        this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
     }
 
     /**
@@ -92,7 +91,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      */
     public ClassPathResource(String path, Class<?> clazz) {
         AssertAide.notNull(path, "Path must not be null");
-        this.path = ResourceAide.normalizePath(path);
+        this.path = ResourceUtils.normalizePath(path);
         this.clazz = clazz;
     }
 
@@ -177,22 +176,22 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     /**
      * 此实现针对当前类路径资源创建一个相对（路径）资源的 ClassPathResource 对象。
      *
-     * @see ResourceAide#applyRelativePath(String, String)
+     * @see ResourceUtils#applyRelativePath(String, String)
      */
     @Override
     public Resource createRelative(String relativePath) {
-        String pathToUse = ResourceAide.applyRelativePath(this.path, relativePath);
+        String pathToUse = ResourceUtils.applyRelativePath(this.path, relativePath);
         return this.clazz != null ? new ClassPathResource(pathToUse, this.clazz) : new ClassPathResource(pathToUse, this.classLoader);
     }
 
     /**
      * 此实现返回该类路径资源指向的文件的名称。
      *
-     * @see ResourceAide#getFilename(String)
+     * @see ResourceUtils#getFilename(String)
      */
     @Override
     public String getFilename() {
-        return ResourceAide.getFilename(this.path);
+        return ResourceUtils.getFilename(this.path);
     }
 
     /**
@@ -203,7 +202,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
         StringBuilder builder = new StringBuilder("class path resource [");
         String pathToUse = this.path;
         if (this.clazz != null && !pathToUse.startsWith("/")) {
-            builder.append(ClassAide.classPackageAsResourcePath(this.clazz));
+            builder.append(ClassUtils.classPackageAsResourcePath(this.clazz));
             builder.append('/');
         }
         if (pathToUse.startsWith("/")) {

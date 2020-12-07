@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,6 @@
 package com.lomcat.caramel.core.io;
 
 import com.lomcat.caramel.core.assist.AssertAide;
-import com.lomcat.caramel.core.assist.ClassAide;
-import com.lomcat.caramel.core.assist.ResourceAide;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,8 +27,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/DefaultResourceLoader.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/DefaultResourceLoader.java">
  *     org.springframework.core.io.DefaultResourceLoader
  * </a>
  *
@@ -39,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *     如果位置值是 URL，则返回 {@link UrlResource}；如果是非 URL 路径或者是 "classpath:" 伪 URL，则返回 {@link ClassPathResource}。
  * </p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
  * @since 0.0.1
  */
 public class DefaultResourceLoader implements ResourceLoader {
@@ -85,7 +83,7 @@ public class DefaultResourceLoader implements ResourceLoader {
      */
     @Override
     public ClassLoader getClassLoader() {
-        return (this.classLoader != null ? this.classLoader : ClassAide.getDefaultClassLoader());
+        return (this.classLoader != null ? this.classLoader : ClassUtils.getDefaultClassLoader());
     }
 
     /**
@@ -145,7 +143,7 @@ public class DefaultResourceLoader implements ResourceLoader {
         } else {
             try {
                 URL url = new URL(location);
-                return ResourceAide.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url);
+                return ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url);
             } catch (MalformedURLException ex) {
                 // 没有 URL -> 解析为资源路径
                 return getResourceByPath(location);
@@ -181,7 +179,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 
         @Override
         public Resource createRelative(String relativePath) {
-            String pathToUse = ResourceAide.applyRelativePath(getPath(), relativePath);
+            String pathToUse = ResourceUtils.applyRelativePath(getPath(), relativePath);
             return new ClassPathContextResource(pathToUse, getClassLoader());
         }
     }

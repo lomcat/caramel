@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
 package com.lomcat.caramel.core.io;
 
 import com.lomcat.caramel.core.assist.AssertAide;
-import com.lomcat.caramel.core.assist.ResourceAide;
 import com.lomcat.caramel.core.assist.StringAide;
 
 import java.io.*;
@@ -30,14 +29,14 @@ import java.nio.file.FileSystem;
 import java.nio.file.*;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/FileSystemResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/FileSystemResource.java">
  *     org.springframework.core.io.FileSystemResource
  * </a>
  *
  * <p>{@link Resource} 的实现，针对文件系统的 {@link java.io.File} 和 {@link java.nio.file.Path} 句柄。</p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
  * @since 0.0.1
  * @see #FileSystemResource(String)
  * @see #FileSystemResource(File)
@@ -64,7 +63,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
      */
     public FileSystemResource(String path) {
         AssertAide.notNull(path, "Path must not be null");
-        this.path = ResourceAide.normalizePath(path);
+        this.path = ResourceUtils.normalizePath(path);
         this.file = new File(path);
         this.filePath = this.file.toPath();
     }
@@ -83,7 +82,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
      */
     public FileSystemResource(File file) {
         AssertAide.notNull(file, "File must not be null");
-        this.path = ResourceAide.normalizePath(file.getPath());
+        this.path = ResourceUtils.normalizePath(file.getPath());
         this.file = file;
         this.filePath = file.toPath();
     }
@@ -106,7 +105,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
      */
     public FileSystemResource(Path filePath) {
         AssertAide.notNull(filePath, "Path must not be null");
-        this.path = ResourceAide.normalizePath(filePath.toString());
+        this.path = ResourceUtils.normalizePath(filePath.toString());
         this.file = null;
         this.filePath = filePath;
     }
@@ -122,7 +121,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
     public FileSystemResource(FileSystem fileSystem, String path) {
         AssertAide.notNull(fileSystem, "FileSystem must not be null");
         AssertAide.notNull(path, "Path must not be null");
-        this.path = ResourceAide.normalizePath(path);
+        this.path = ResourceUtils.normalizePath(path);
         this.file = null;
         this.filePath = fileSystem.getPath(this.path).normalize();
     }
@@ -288,11 +287,11 @@ public class FileSystemResource extends AbstractResource implements WritableReso
     /**
      * 此实现针对当前资源创建一个相对（路径）资源的 FileSystemResource 对象。
      *
-     * @see ResourceAide#applyRelativePath(String, String)
+     * @see ResourceUtils#applyRelativePath(String, String)
      */
     @Override
     public Resource createRelative(String relativePath) {
-        String pathToUse = ResourceAide.applyRelativePath(this.path, relativePath);
+        String pathToUse = ResourceUtils.applyRelativePath(this.path, relativePath);
         return this.file != null ? new FileSystemResource(pathToUse)
                 : new FileSystemResource(this.filePath.getFileSystem(), pathToUse);
     }

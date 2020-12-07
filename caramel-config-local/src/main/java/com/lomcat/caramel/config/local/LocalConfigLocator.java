@@ -198,8 +198,8 @@ public class LocalConfigLocator implements ConfigLocator {
                 // 根据路径和扩展名查找配置资源
                 List<Resource> resources = resolveResources(position.getName(), paths, extensions);
                 if (CollectionAide.isNotEmpty(resources)) {
-                    ConfigResourceBunch bunch = ConfigResourceBunch.newInstance(position.getKey(), position.getPriority(), resources);
-                    List<ConfigResourceBunch> cachedBunches = bunchesMap.computeIfAbsent(bunch.key(), k -> new ArrayList<>());
+                    ConfigResourceBunch bunch = ConfigResourceBunch.newInstance(position.getKey(), position.getPriority(), resources, position.getRefreshEnabled());
+                    List<ConfigResourceBunch> cachedBunches = bunchesMap.computeIfAbsent(bunch.getKey(), k -> new ArrayList<>());
                     cachedBunches.add(bunch);
                 }
             });
@@ -339,10 +339,6 @@ public class LocalConfigLocator implements ConfigLocator {
     }
 
     @Override
-    public Double priority() {
-        return priority;
-    }
-
     public Double getPriority() {
         return priority;
     }

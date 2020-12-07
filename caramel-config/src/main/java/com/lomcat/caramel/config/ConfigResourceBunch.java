@@ -45,27 +45,43 @@ public class ConfigResourceBunch implements PriorityComparable {
     private final String key;
     private final Double priority;
     private final List<Resource> resources;
+    private final Boolean refreshEnabled;
 
-    public static ConfigResourceBunch newInstance(String key, Double priority, List<Resource> resources) {
-        return new ConfigResourceBunch(key, priority, resources);
+    private double softPriority;
+
+    public static ConfigResourceBunch newInstance(String key, Double priority, List<Resource> resources, Boolean refreshEnabled) {
+        return new ConfigResourceBunch(key, priority, resources, refreshEnabled);
     }
 
-    public ConfigResourceBunch(String key, Double priority, List<Resource> resources) {
+    public ConfigResourceBunch(String key, Double priority, List<Resource> resources, Boolean refreshEnabled) {
         this.key = key;
         this.priority = priority;
         this.resources = resources;
+        this.refreshEnabled = refreshEnabled;
     }
 
-    public String key() {
+    public String getKey() {
         return this.key;
     }
 
     @Override
-    public Double priority() {
+    public Double getPriority() {
         return this.priority;
     }
 
-    List<Resource> resources() {
+    public List<Resource> getResources() {
         return this.resources;
+    }
+
+    public Boolean getRefreshEnabled() {
+        return this.refreshEnabled;
+    }
+
+    double getSoftPriority() {
+        return this.softPriority;
+    }
+
+    void setSoftPriority(double softPriority) {
+        this.softPriority = softPriority;
     }
 }

@@ -1,0 +1,17 @@
+archivesBaseName = 'caramel-config-apollo'
+
+dependencies {
+    api caramelCore
+    api caramelConfig
+
+    implementation slf4jApi
+    implementation typesafeConfig
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-config-apollo'
+    PUBLISHED_ARTIFACT_ID = 'caramel-config-apollo'
+    PROJECT_DESCRIPTION = 'Caramel Config from Apollo'
+}
+
+apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
 package com.lomcat.caramel.core.io;
 
 import com.lomcat.caramel.core.assist.AssertAide;
-import com.lomcat.caramel.core.assist.ResourceAide;
 import com.lomcat.caramel.core.assist.StringAide;
 
 import java.io.File;
@@ -26,8 +25,8 @@ import java.io.InputStream;
 import java.net.*;
 
 /**
- * Modeled on
- * <a href="https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/core/io/UrlResource.java">
+ * Copied from
+ * <a href="https://github.com/spring-projects/spring-framework/blob/v5.3.1/spring-core/src/main/java/org/springframework/core/io/UrlResource.java">
  *     org.springframework.core.io.UrlResource
  * </a>
  *
@@ -36,7 +35,7 @@ import java.net.*;
  *     在 {@code "file:"} 协议下，支持解析为 {@code URL} 和 {@code File}。
  * </p>
  *
- * @author Kweny
+ * @author Juergen Hoeller
  * @since 0.0.1
  * @see java.net.URL
  */
@@ -140,10 +139,10 @@ public class UrlResource extends AbstractFileResolvingResource {
      * @param originalUrl 原始 URL
      * @param originalPath 原始 URL 路径
      * @return 规范化的 URL（可能是原始 URL 的原样）
-     * @see ResourceAide#normalizePath(String)
+     * @see ResourceUtils#normalizePath(String)
      */
     private static URL getCleanedUrl(URL originalUrl, String originalPath) {
-        String cleanedPath = ResourceAide.normalizePath(originalPath);
+        String cleanedPath = ResourceUtils.normalizePath(originalPath);
         if (!cleanedPath.equals(originalPath)) {
             try {
                 return new URL(cleanedPath);
@@ -182,7 +181,7 @@ public class UrlResource extends AbstractFileResolvingResource {
     @Override
     public InputStream getInputStream() throws IOException {
         URLConnection con = this.url.openConnection();
-        ResourceAide.useCachesIfNecessary(con);
+        ResourceUtils.useCachesIfNecessary(con);
         try {
             return con.getInputStream();
         } catch (IOException ex) {
@@ -227,7 +226,7 @@ public class UrlResource extends AbstractFileResolvingResource {
     /**
      * 如果当前资源的底层 URL/URI 指向的是文件系统的文件，则返回对应 File 引用。
      *
-     * @see ResourceAide#getFile(java.net.URL, String)
+     * @see ResourceUtils#getFile(java.net.URL, String)
      */
     @Override
     public File getFile() throws IOException {
@@ -272,7 +271,7 @@ public class UrlResource extends AbstractFileResolvingResource {
      */
     @Override
     public String getFilename() {
-        return ResourceAide.getFilename(getCleanedUrl().getPath());
+        return ResourceUtils.getFilename(getCleanedUrl().getPath());
     }
 
     /**

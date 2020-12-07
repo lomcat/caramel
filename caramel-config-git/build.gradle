@@ -1,0 +1,17 @@
+archivesBaseName = 'caramel-config-git'
+
+dependencies {
+    api caramelCore
+    api caramelConfig
+
+    implementation slf4jApi
+    implementation typesafeConfig
+}
+
+ext {
+    BINTRAY_NAME = 'caramel-config-git'
+    PUBLISHED_ARTIFACT_ID = 'caramel-config-git'
+    PROJECT_DESCRIPTION = 'Caramel Config from Git resource'
+}
+
+apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

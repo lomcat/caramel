@@ -11,7 +11,7 @@ dependencies {
 ext {
     BINTRAY_NAME = 'caramel-config-local'
     PUBLISHED_ARTIFACT_ID = 'caramel-config-local'
-    PROJECT_DESCRIPTION = 'Caramel Config Local'
+    PROJECT_DESCRIPTION = 'Caramel Config from Local resource'
 }
 
 apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"
