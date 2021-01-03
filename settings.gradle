@@ -3,7 +3,12 @@ include 'caramel-core'
 include 'caramel-config'
 include 'caramel-config-local'
 include 'caramel-config-nacos'
+include 'caramel-config-http'
+include 'caramel-config-git'
+include 'caramel-config-scc'
+include 'caramel-config-apollo'
 
+// testers
 include 'caramel-zoo'
 include 'caramel-zoo:alpaca'
 
@@ -11,8 +16,3 @@ rootProject.name = 'caramel'
 rootProject.children.each {project ->
     project.buildFileName = "${project.name}.gradle"
 }
-include 'caramel-config-http'
-include 'caramel-config-git'
-include 'caramel-config-scc'
-include 'caramel-config-apollo'
-
