@@ -13,7 +13,7 @@ ext {
 
     PROJECT_NAME = 'Caramel'
     PROJECT_DESCRIPTION = 'Carefree Framework Library'
-    PROJECT_LABELS = ['Caramel', 'Spring', 'SpringBoot']
+    PROJECT_LABELS = ['Lomcat', 'Caramel', 'Spring', 'SpringBoot']
     PROJECT_WEBSITE_URL = 'https://github.com/lomcat/caramel'
     PROJECT_VCS_URL = 'https://github.com/lomcat/caramel.git'
     PROJECT_ISSUE_TRACKER_URL = 'https://github.com/lomcat/caramel/issues'
