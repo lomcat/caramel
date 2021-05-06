@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/kweny/doraket/master/gradle/module-task-skippable.gradle
+
 Properties localProps = new Properties()
 if (project.rootProject.file('gradle.properties').exists()) {
     localProps.load(project.rootProject.file('gradle.properties').newDataInputStream())

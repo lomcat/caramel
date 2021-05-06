@@ -1,47 +1,76 @@
-import org.gradle.api.internal.project.DefaultProject
+plugins {
+    id "me.champeau.gradle.jmh" version "0.5.3" apply false
+}
 
-allprojects {
+ext {
+    moduleProjects = subprojects.findAll { it.name.startsWith('caramel') }
+    javaProjects = subprojects - project(":framework-bom")
+
+    DependencyVersions = [
+            slf4j: '1.7.30',
+            typesafe_config: '1.4.1',
+
+
+
+
+            commons_lang3: '3.12.0',
+            commons_collection4: '4.4',
+            commons_net: '3.8.0',
+            commons_pool2: '2.9.0',
+
+            gson: '2.8.6',
+            guava: '30.1.1-jre',
+            protobuf_java: '3.15.6',
+
+            typesafe_akka: '2.6.14',
+
+            jackson: '2.11.4',
+
+            jakarta_validation: '3.0.0',
+            jakarta_servlet: '4.0.4',
+
+            alibaba_ttl: '2.12.1',
+
+            log4j: '2.13.3',
+
+            spring: '5.3.4',
+            springboot: '2.4.3',
+            springcloud: '3.0.2',
+            alicloud: '2021.1',
+            mybatis: '3.5.6'
+    ]
+}
+
+configure(allprojects) { project ->
     buildscript {
         repositories {
-            maven { url "https://dl.bintray.com/lomcat/maven/" }
-            maven { url "https://dl.bintray.com/lomcat/maven-test/" }
-            maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-            jcenter()
+            maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+            maven { url "https://plugins.gradle.org/m2/" }
             mavenCentral()
-            maven { url "https://repo1.maven.org/maven2/" }
-            maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-            maven { url "https://repo.spring.io/libs-release/" }
-            maven { url "https://repo.spring.io/plugins-release/" }
-            maven { url "http://maven.icm.edu.pl/artifactory/repo/" }
-            maven { url "https://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/" }
-        }
-
-        dependencies {
-            classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
         }
 
         apply from: "${rootDir}/gradle/module-task-skippable.gradle"
     }
 
     repositories {
-        maven { url "https://dl.bintray.com/lomcat/maven/" }
-        maven { url "https://dl.bintray.com/lomcat/maven-test/" }
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-        jcenter()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
         mavenCentral()
-        maven { url "https://repo1.maven.org/maven2/" }
-        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-        maven { url "https://repo.spring.io/libs-release/" }
-        maven { url "https://repo.spring.io/plugins-release/" }
-        maven { url "http://maven.icm.edu.pl/artifactory/repo/" }
-        maven { url "https://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/" }
     }
 
-    group 'com.lomcat.caramel'
-    version = '0.0.1'
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, "seconds"
+            cacheDynamicVersionsFor 0, "seconds"
+        }
+    }
+}
+
+configure([rootProject] + javaProjects) { project ->
+    group = 'com.lomcat.caramel'
 
     apply plugin: 'java-library'
     apply plugin: 'idea'
+    apply plugin: "checkstyle"
 
     sourceCompatibility = 8
     targetCompatibility = 8
@@ -52,37 +81,86 @@ allprojects {
     compileTestJava {
         options.encoding = "UTF-8"
     }
-    javadoc {
-        options.encoding = "UTF-8"
-        options.memberLevel = JavadocMemberLevel.PROTECTED
-        options.author = true
-        options.header = project.name
-        options.use = true
-        options.addStringOption("Xdoclint:none", "-quiet")
+
+    checkstyle {
+        toolVersion = "8.41"
+        configDirectory.set(rootProject.file("src/checkstyle"))
+        checkstyleMain.enabled = false
+        checkstyleTest.enabled = false
     }
 
     configurations {
-//        developmentOnly
-//        runtimeClasspath {
-//            extendsFrom developmentOnly
-//        }
+        all*.exclude module: 'spring-boot-starter-tomcat'
+        all*.exclude module: 'spring-boot-starter-logging'
+        all*.exclude module: 'tomcat-jdbc'
+        all*.exclude module: 'junit'
+        all*.exclude module: 'junit-vintage-engine'
+        all*.exclude module: 'logback-core'
+        all*.exclude module: 'logback-classic'
+        all*.exclude module: 'spring-jcl'
+        all*.exclude group: 'commons-logging'
+        all*.exclude group: 'log4j', module: 'log4j'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, "seconds"
+            cacheDynamicVersionsFor 0, "seconds"
+        }
     }
 
     dependencies {
-        implementation group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
+        implementation 'org.jetbrains:annotations:20.1.0'
 
-        testImplementation group: 'junit', name: 'junit', version: '4.12'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+        testImplementation 'org.hamcrest:hamcrest:2.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+        testRuntimeOnly 'org.apache.logging.log4j:log4j-core:' + project.DependencyVersions.log4j
+        testRuntimeOnly 'org.apache.logging.log4j:log4j-slf4j-impl:' + project.DependencyVersions.log4j
+        testRuntimeOnly 'org.apache.logging.log4j:log4j-jul:' + project.DependencyVersions.log4j
+
+        checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:0.0.15")
     }
 
-    ext {
-        caramelCore = project(':caramel-core') as DefaultProject
-        caramelConfig = project(':caramel-config') as DefaultProject
-
-        // ----- dependency definitions -----
-        slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
-        typesafeConfig = 'com.typesafe:config:1.4.0'
-
-        apply from: "${rootDir}/gradle/publications.gradle"
+    test {
+        useJUnitPlatform()
+        include(["**/*Tests.class", "**/*Test.class"])
+        systemProperty("java.awt.headless", "true")
     }
 
+    ext.javadocLinks = [
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://docs.oracle.com/javaee/7/api/",
+            "https://docs.oracle.com/cd/E13222_01/wls/docs90/javadocs/",  // CommonJ
+            "https://www.ibm.com/support/knowledgecenter/SS7JFU_8.5.5/com.ibm.websphere.javadoc.doc/web/apidocs/",
+            "https://glassfish.java.net/nonav/docs/v3/api/",
+            "https://docs.jboss.org/jbossas/javadoc/4.0.5/connector/",
+            "https://docs.jboss.org/jbossas/javadoc/7.1.2.Final/",
+            "https://tiles.apache.org/tiles-request/apidocs/",
+            "https://tiles.apache.org/framework/apidocs/",
+            "https://www.eclipse.org/jetty/javadoc/jetty-9/index.html",
+            "https://www.eclipse.org/aspectj/doc/released/aspectj5rt-api/",
+            "https://www.ehcache.org/apidocs/2.10.4/",
+            "https://www.quartz-scheduler.org/api/2.3.0/",
+            "https://fasterxml.github.io/jackson-core/javadoc/2.11/",
+            "https://fasterxml.github.io/jackson-databind/javadoc/2.11/",
+            "https://fasterxml.github.io/jackson-dataformat-xml/javadoc/2.11/",
+            "https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/",
+            "https://projectreactor.io/docs/test/release/api/",
+            "https://junit.org/junit4/javadoc/4.13.2/",
+            "https://junit.org/junit5/docs/5.7.1/api/",
+            "https://docs.spring.io/spring-framework/docs/5.3.4/javadoc-api/",
+            "https://docs.spring.io/spring-boot/docs/2.4.3/api/"
+    ] as String[]
 }
+
+configure(moduleProjects) { project ->
+    apply from: "${rootDir}/gradle/caramel-module.gradle"
+}
+
+configure(rootProject) {
+    description = 'Caramel Framework'
+    apply from: "${rootDir}/gradle/publications.gradle"
+}
+

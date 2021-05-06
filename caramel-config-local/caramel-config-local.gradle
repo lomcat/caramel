@@ -1,17 +1,6 @@
-archivesBaseName = 'caramel-config-local'
+description = 'Caramel Config for Local File System'
 
 dependencies {
-    api caramelCore
-    api caramelConfig
-
-    implementation slf4jApi
-    implementation typesafeConfig
+    api project(':caramel-core')
+    api project(':caramel-config')
 }
-
-ext {
-    BINTRAY_NAME = 'caramel-config-local'
-    PUBLISHED_ARTIFACT_ID = 'caramel-config-local'
-    PROJECT_DESCRIPTION = 'Caramel Config from Local resource'
-}
-
-apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

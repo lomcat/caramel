@@ -1,17 +1,6 @@
-archivesBaseName = 'caramel-config-scc'
+description = 'Caramel Config for Spring Cloud Config'
 
 dependencies {
-    api caramelCore
-    api caramelConfig
-
-    implementation slf4jApi
-    implementation typesafeConfig
+    api project(':caramel-core')
+    api project(':caramel-config')
 }
-
-ext {
-    BINTRAY_NAME = 'caramel-config-scc'
-    PUBLISHED_ARTIFACT_ID = 'caramel-config-scc'
-    PROJECT_DESCRIPTION = 'Caramel Config from Spring Cloud Config'
-}
-
-apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

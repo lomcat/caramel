@@ -1,17 +1,6 @@
-archivesBaseName = 'caramel-config-http'
+description = 'Caramel Config for Http'
 
 dependencies {
-    api caramelCore
-    api caramelConfig
-
-    implementation slf4jApi
-    implementation typesafeConfig
+    api project(':caramel-core')
+    api project(':caramel-config')
 }
-
-ext {
-    BINTRAY_NAME = 'caramel-config-http'
-    PUBLISHED_ARTIFACT_ID = 'caramel-config-http'
-    PROJECT_DESCRIPTION = 'Caramel Config from Http resource'
-}
-
-apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

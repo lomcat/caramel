@@ -1,16 +1,7 @@
-archivesBaseName = 'caramel-config'
+description = 'Caramel Config'
 
 dependencies {
-    api caramelCore
+    api project(':caramel-core')
 
-    implementation slf4jApi
-    implementation typesafeConfig
+    implementation 'com.typesafe:config:' + project.DependencyVersions.typesafe_config
 }
-
-ext {
-    BINTRAY_NAME = 'caramel-config'
-    PUBLISHED_ARTIFACT_ID = 'caramel-config'
-    PROJECT_DESCRIPTION = 'Caramel Config'
-}
-
-apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

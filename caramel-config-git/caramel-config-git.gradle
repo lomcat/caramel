@@ -1,4 +1,4 @@
-description = 'Caramel Config for Nacos'
+description = 'Caramel Config for Git'
 
 dependencies {
     api project(':caramel-core')

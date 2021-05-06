@@ -7,6 +7,7 @@ include 'caramel-config-http'
 include 'caramel-config-git'
 include 'caramel-config-scc'
 include 'caramel-config-apollo'
+include 'framework-bom'
 
 // testers
 include 'caramel-zoo'
@@ -16,3 +17,4 @@ rootProject.name = 'caramel'
 rootProject.children.each {project ->
     project.buildFileName = "${project.name}.gradle"
 }
+

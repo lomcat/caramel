@@ -1,13 +1,5 @@
-archivesBaseName = 'caramel-core'
+description = 'Caramel Core'
 
 dependencies {
-    implementation slf4jApi
+    api 'org.slf4j:slf4j-api:' + project.DependencyVersions.slf4j
 }
-
-ext {
-    BINTRAY_NAME = 'caramel-core'
-    PUBLISHED_ARTIFACT_ID = 'caramel-core'
-    PROJECT_DESCRIPTION = 'Caramel Core'
-}
-
-apply from: "${rootDir}/gradle/bintray-upload-normal.gradle"

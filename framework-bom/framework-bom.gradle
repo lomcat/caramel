@@ -1,0 +1,23 @@
+description = "Caramel Framework (Bill of Materials)"
+
+apply plugin: 'java-platform'
+apply from: "$rootDir/gradle/publications.gradle"
+
+group = 'com.lomcat.caramel'
+
+dependencies {
+    constraints {
+        parent.moduleProjects.sort { "$it.name" }.each {
+            api it
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'caramel-framework-bom'
+            from components.javaPlatform
+        }
+    }
+}
