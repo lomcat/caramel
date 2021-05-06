@@ -17,9 +17,10 @@
 
     <bean id="configRegistry" class="com.lomcat.caramel.config.ConfigRegistry" init-method="init" destroy-method="destroy">
         <property name="enabled" value="true" />
+<!--        <property name="mapKebabCamelCase" value="false" />-->
         <property name="echo">
             <bean class="com.lomcat.caramel.config.CaramelConfigEcho">
-                <property name="waves" value="summary,track,content" />
+                <property name="granularity" value="summary,track,content" />
                 <property name="masking" value="false" />
             </bean>
         </property>

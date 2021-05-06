@@ -90,17 +90,6 @@ configure([rootProject] + javaProjects) { project ->
     }
 
     configurations {
-        all*.exclude module: 'spring-boot-starter-tomcat'
-        all*.exclude module: 'spring-boot-starter-logging'
-        all*.exclude module: 'tomcat-jdbc'
-        all*.exclude module: 'junit'
-        all*.exclude module: 'junit-vintage-engine'
-        all*.exclude module: 'logback-core'
-        all*.exclude module: 'logback-classic'
-        all*.exclude module: 'spring-jcl'
-        all*.exclude group: 'commons-logging'
-        all*.exclude group: 'log4j', module: 'log4j'
-        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 
     configurations.all {

@@ -24,7 +24,7 @@
 * 配置文件所在路径。
 * 可以是文件系统路径，前缀 `file:` ，如绝对路径 `file:/home/config`，相对路径 `file:./config`。
 * 也可以是 classpath 路径，前缀 `classpath:` 或无前缀，如 `classpath:/`、`/config`。
-* 可选项，若不指定，则从 `classpath:/`、`classpath:/config/`、`file:./`、`file:./config/` 优先级递增的四个约定路径中查找增。
+* 可选项，若不指定，则从 `classpath:/`、`classpath:/config/`、`file:./`、`file:./config/` 优先级递增的四个约定路径中查找。
 
 ### extension
 

@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <h3>Caramel 加载的配置文件内容打印</h3>
+ * <P>Caramel 加载的配置文件内容打印</P>
  *
  * @author Kweny
  * @since 0.0.1
@@ -30,14 +30,14 @@ public class CaramelConfigEcho {
 
     private static final Logger logger = LoggerFactory.getLogger(CaramelConfigEcho.class);
 
-    public static final String WAVE_SUMMARY = "summary";
-    public static final String WAVE_TRACK = "track";
-    public static final String WAVE_CONTENT = "content";
+    public static final String GRANULARITY_SUMMARY = "summary"; // 打印加载的配置文件
+    public static final String GRANULARITY_TRACK = "track"; // 打印配置项加载轨迹，包含 summary
+    public static final String GRANULARITY_CONTENT = "content"; // 打印完整的配置内容，包含 track 和 summary
 
     /**
-     * 打印内容的细节度：none-不打印；track-打印加载轨迹；detail-打印配置内容
+     * 打印内容的粒度：null-不打印；"summary"-打印加载的配置文件；"track"-打印每个配置项的加载轨迹；"content"-打印完整的配置内容content。
      */
-    private String waves;
+    private String granularity;
     /**
      * 敏感数据打印时是否脱敏
      */
@@ -63,13 +63,13 @@ public class CaramelConfigEcho {
         return contentEnabled;
     }
 
-    public String getWaves() {
-        return waves;
+    public String getGranularity() {
+        return granularity;
     }
 
-    public void setWaves(String waves) {
-        this.waves = waves;
-        resolveWaves();
+    public void setGranularity(String granularity) {
+        this.granularity = granularity;
+        resolveGranularity();
     }
 
     public boolean isMasking() {
@@ -84,16 +84,16 @@ public class CaramelConfigEcho {
         logger.info(text);
     }
 
-    private void resolveWaves() {
-        if (StringAide.isBlank(this.waves)) {
+    private void resolveGranularity() {
+        if (StringAide.isBlank(this.granularity)) {
             return;
         }
-        String[] waveSections = this.waves.split(",");
-        for (String section : waveSections) {
+        String[] granularitySections = this.granularity.split(",");
+        for (String section : granularitySections) {
             section = StringAide.trim(section);
-            this.summaryEnabled |= StringAide.equalsIgnoreCase(section, WAVE_SUMMARY);
-            this.trackEnabled |= StringAide.equalsIgnoreCase(section, WAVE_TRACK);
-            this.contentEnabled |= StringAide.equalsIgnoreCase(section, WAVE_CONTENT);
+            this.summaryEnabled |= StringAide.equalsIgnoreCase(section, GRANULARITY_SUMMARY);
+            this.trackEnabled |= StringAide.equalsIgnoreCase(section, GRANULARITY_TRACK);
+            this.contentEnabled |= StringAide.equalsIgnoreCase(section, GRANULARITY_CONTENT);
         }
     }
 }
