@@ -25,7 +25,7 @@
             </bean>
         </property>
         <property name="locators">
-            <bean class="com.lomcat.caramel.config.local.LocalConfigLocator">
+            <bean class="com.lomcat.caramel.config.local.LocalConfigResourceLocator">
                 <property name="locations">
                     <list>
                         <value>{druid}(100)classpath:config/redis.properties</value>

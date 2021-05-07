@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config.listener;
+package com.lomcat.caramel.config.local;
 
-import com.lomcat.caramel.config.CaramelConfig;
-import com.lomcat.caramel.config.ConfigResourceBunch;
-
-import java.util.List;
-import java.util.Map;
+import com.lomcat.caramel.config.listener.ConfigRefreshListener;
+import com.lomcat.caramel.config.listener.ConfigRefreshedEvent;
 
 /**
- * TODO-Kweny ConfigRefreshEvent
+ * TODO-Kweny LocalConfigRefreshListener
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class ConfigRefreshedEvent {
-    private String key;
-    private CaramelConfig oldConfig;
-    private CaramelConfig newConfig;
-    private Map<String, List<ConfigResourceBunch>> changedResources;
+public class LocalConfigRefreshListener implements ConfigRefreshListener {
+    @Override
+    public void onConfigRefreshed(ConfigRefreshedEvent event) {
+
+    }
 }

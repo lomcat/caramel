@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Copied from
@@ -43,6 +44,37 @@ import java.nio.channels.ReadableByteChannel;
  * @since 0.0.1
  */
 public interface Resource {
+
+    /**
+     * 获取此资源的散列值。
+     *
+     * @return 散列值
+     * @throws NoSuchAlgorithmException 当前环境不支持 MD5 算法
+     * @throws IOException IO 异常
+     */
+    default String getHashValue() throws NoSuchAlgorithmException, IOException {
+        return ResourceHash.hashValue(this);
+    }
+
+    /**
+     * 以指定算法获取此资源的散列值。
+     *
+     * @param algorithm 散列算法——
+     *                  <ul>
+     *                      <li>{@link ResourceHash#ALGORITHM_MD5 MD5}</li>
+     *                      <li>{@link ResourceHash#ALGORITHM_SHA1 SHA-1}</li>
+     *                      <li>{@link ResourceHash#ALGORITHM_SHA224 SHA-224}</li>
+     *                      <li>{@link ResourceHash#ALGORITHM_SHA256 SHA-256}</li>
+     *                      <li>{@link ResourceHash#ALGORITHM_SHA384 SHA-384}</li>
+     *                      <li>{@link ResourceHash#ALGORITHM_SHA512 SHA-512}</li>
+     *                  </ul>
+     * @return 散列值
+     * @throws NoSuchAlgorithmException 当前环境不支持指定的散列算法
+     * @throws IOException IO 异常
+     */
+    default String getHashValue(String algorithm) throws NoSuchAlgorithmException, IOException {
+        return ResourceHash.hashValue(this, algorithm);
+    }
 
     /**
      * <p>

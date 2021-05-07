@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package com.lomcat.caramel.config.listener;
-
-import com.lomcat.caramel.config.CaramelConfig;
-import com.lomcat.caramel.config.ConfigResourceBunch;
-
-import java.util.List;
-import java.util.Map;
+package com.lomcat.caramel.config;
 
 /**
- * TODO-Kweny ConfigRefreshEvent
+ * TODO-Kweny ConfigResourceMonitor
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class ConfigRefreshedEvent {
-    private String key;
-    private CaramelConfig oldConfig;
-    private CaramelConfig newConfig;
-    private Map<String, List<ConfigResourceBunch>> changedResources;
+public class ConfigResourceMonitor {
 }

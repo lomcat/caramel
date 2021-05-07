@@ -27,10 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -54,16 +52,17 @@ public class ConfigRegistry {
      */
     private CaramelConfigEcho echo;
     /**
-     * 是否开启自动刷新（全局，为被每个定位对象的配置覆盖）
+     * 是否开启自动刷新（全局，会被每个定位对象的配置覆盖）
      */
     private boolean refreshEnabled;
+    private Duration refreshInterval;
     /**
      * 对于配置项的名称是否开启串型和驼峰命名的映射。默认开启
      */
     private boolean mapKebabCamelCase;
 
     /** 配置资源定位器 */
-    private List<ConfigLocator> locators;
+    private List<ConfigResourceLocator> locators;
 
     /** 配置数据注册表，结构为 < key, config > */
     private final Map<String, CaramelConfig> configHolder;
@@ -92,9 +91,13 @@ public class ConfigRegistry {
         return Collections.unmodifiableMap(configHolder);
     }
 
+    public void refresh() {
+        // TODO-Kweny refresh
+    }
+
     public void init() {
         if (!this.enabled) {
-            logger.debug("[Caramel] Caramel config is not enabled.");
+            logger.debug("[Caramel.registry] Caramel config is not enabled.");
             return;
         }
 
@@ -134,8 +137,19 @@ public class ConfigRegistry {
             AtomicReference<Config> keyConfig = new AtomicReference<>();
             resourceBunches.forEach(bunch -> {
                 // 加载合并同一个 bunch 中的多个 resource
-                bunch.getResources().forEach(resource -> {
+                List<ConfigResource> resources = new ArrayList<>(bunch.getResources().values());
+                Collections.sort(resources); // 根据优先级排序
+                resources.forEach(resource -> {
                     echoSummary_Resource(echo, echoBuilder, bunch.getKey(), resource); // echo summary
+
+                    try {
+                        System.out.println("========================");
+                        String resourceHashValue = resource.getHashValue();
+                        System.out.println("<<" + resource + "== HashValue == " + resourceHashValue + ">>");
+                        System.out.println("========================");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
                         Config resourceConfig = ConfigFactory.parseReader(reader);
@@ -202,13 +216,13 @@ public class ConfigRegistry {
         */
     }
 
-    private Map<String, List<ConfigResourceBunch>> loadResourceBunches(List<ConfigLocator> locators) {
+    private Map<String, List<ConfigResourceBunch>> loadResourceBunches(List<ConfigResourceLocator> locators) {
         Map<String, List<ConfigResourceBunch>> bunchesMap = new HashMap<>();
 
         // 根据优先级排序定位器
-        Collections.sort(this.locators);
+        Collections.sort(locators);
 
-        for (ConfigLocator locator : this.locators) {
+        for (ConfigResourceLocator locator : locators) {
             // 执行定位
             Map<String, List<ConfigResourceBunch>> locatedBunchesMap = locator.locate();
 
@@ -260,6 +274,14 @@ public class ConfigRegistry {
         this.refreshEnabled = refreshEnabled;
     }
 
+    public Duration getRefreshInterval() {
+        return refreshInterval;
+    }
+
+    public void setRefreshInterval(Duration refreshInterval) {
+        this.refreshInterval = refreshInterval;
+    }
+
     public boolean isMapKebabCamelCase() {
         return mapKebabCamelCase;
     }
@@ -268,11 +290,11 @@ public class ConfigRegistry {
         this.mapKebabCamelCase = mapKebabCamelCase;
     }
 
-    public List<ConfigLocator> getLocators() {
+    public List<ConfigResourceLocator> getLocators() {
         return locators;
     }
 
-    public void setLocators(List<ConfigLocator> locators) {
+    public void setLocators(List<ConfigResourceLocator> locators) {
         this.locators = locators;
     }
 

@@ -16,25 +16,35 @@
 
 package com.lomcat.caramel.config.local;
 
-import com.lomcat.caramel.config.ConfigLocator;
+import com.lomcat.caramel.config.ConfigResource;
+import com.lomcat.caramel.config.ConfigResourceLocator;
 import com.lomcat.caramel.config.ConfigResourceBunch;
 import com.lomcat.caramel.config.exception.ConfigLocateException;
 import com.lomcat.caramel.core.assist.ArrayAide;
 import com.lomcat.caramel.core.assist.CollectionAide;
+import com.lomcat.caramel.core.assist.MapAide;
 import com.lomcat.caramel.core.assist.StringAide;
 import com.lomcat.caramel.core.io.DefaultResourceLoader;
 import com.lomcat.caramel.core.io.Resource;
 import com.lomcat.caramel.core.io.ResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 本地配置文件定位器，{@link ConfigLocator} 的实现，用于定位程序本地的配置文件。
+ * 本地配置文件定位器，{@link ConfigResourceLocator} 的实现，用于定位程序本地的配置文件。
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class LocalConfigLocator implements ConfigLocator {
+public class LocalConfigResourceLocator implements ConfigResourceLocator {
+
+    private static final Logger logger = LoggerFactory.getLogger(LocalConfigResourceLocator.class);
+
     /** Key 前缀 */
     private static final String KEY_PREFIX = "{";
     /** Key 后缀 */
@@ -196,9 +206,9 @@ public class LocalConfigLocator implements ConfigLocator {
                 }
 
                 // 根据路径和扩展名查找配置资源
-                List<Resource> resources = resolveResources(position.getName(), paths, extensions);
-                if (CollectionAide.isNotEmpty(resources)) {
-                    ConfigResourceBunch bunch = ConfigResourceBunch.newInstance(position.getKey(), position.getPriority(), resources, position.getRefreshEnabled());
+                Map<String, ConfigResource> resources = resolveResources(position.getName(), paths, extensions);
+                if (MapAide.isNotEmpty(resources)) {
+                    ConfigResourceBunch bunch = ConfigResourceBunch.create(position.getKey(), position.getPriority(), resources, position.getRefreshEnabled());
                     List<ConfigResourceBunch> cachedBunches = bunchesMap.computeIfAbsent(bunch.getKey(), k -> new ArrayList<>());
                     cachedBunches.add(bunch);
                 }
@@ -209,10 +219,11 @@ public class LocalConfigLocator implements ConfigLocator {
     }
 
 
-    private static List<Resource> resolveResources(String name, List<String> paths, List<String> extensions) {
-        List<Resource> resources = new LinkedList<>();
+    private static Map<String, ConfigResource> resolveResources(String name, List<String> paths, List<String> extensions) {
+        Map<String, ConfigResource> resources = new HashMap<>();
 
         ResourceLoader resourceLoader = new DefaultResourceLoader();
+        AtomicInteger priority = new AtomicInteger(0);
         paths.forEach(path -> extensions.forEach(extension -> {
             StringBuilder pathBuilder = new StringBuilder();
 
@@ -233,7 +244,11 @@ public class LocalConfigLocator implements ConfigLocator {
 
             Resource resource = resourceLoader.getResource(pathBuilder.toString());
             if (resource.exists()) {
-                resources.add(resource);
+                try {
+                    resources.put(resource.getDescription(), ConfigResource.create(resource, (double) priority.incrementAndGet()));
+                } catch (NoSuchAlgorithmException | IOException ex) {
+                    logger.error(String.format("[Caramel.LocalLocator] Error locating config resource: %s", resource), ex);
+                }
             }
         }));
 

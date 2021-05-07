@@ -17,9 +17,8 @@
 package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.config.internel.PriorityComparable;
-import com.lomcat.caramel.core.io.Resource;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -38,22 +37,37 @@ import java.util.List;
  *     此时一个唯一 key 所标识的完整配置数据 {@link CaramelConfig} 才算加载完成。
  * </p>
  *
+ * <p>
+ *     <ul>
+ *         <li>一个 Bunch 对应的是一个”配置定位描述“对象，如字符串形式的 {@code {redis}(100)/config/redis.conf}，或者一个包含 name、path、extension、key、priority 等属性的对象；</li>
+ *         <li>一个 Bunch 中可以包含多个 Resource，如 {@code {redis}(100)redis} 由于未指定路径和扩展名，将根据约定路径和扩展名来查找，可能会找到多个匹配的 Resource；</li>
+ *         <li>
+ *             一个 Key 可能包含多个 Bunch，如 {@code {redis}(100)/config/redis.conf} 和 {@code {redis}(200)/config/redis-cluster} 两个 Bunch 的 Key 是一样的，前者唯一确定了一个 Resource，而后者由于缺失扩展名可能会查找到多个 Resource。
+ *             <ul>
+ *                 <li>前者的优先级是 100，后者的优先级是 200，因此后者中的选项将覆盖前者中的同名选项；</li>
+ *                 <li>后者中若查找到多个 Resource，这些 Resource 之间的优先级将以具体的定位器实现为准，如对于后者这种本地文件定位来说，会使用约定路径和扩展名的优先级。</li>
+ *             </ul>
+ *         </li>
+ *     </ul>
+ * </p>
+ *
  * @author Kweny
  * @since 0.0.1
  */
 public class ConfigResourceBunch implements PriorityComparable {
     private final String key;
     private final Double priority;
-    private final List<Resource> resources;
+//    private final List<ConfigResource> resources;
+    private final Map<String, ConfigResource> resources;
     private final Boolean refreshEnabled;
 
     private double softPriority;
 
-    public static ConfigResourceBunch newInstance(String key, Double priority, List<Resource> resources, Boolean refreshEnabled) {
+    public static ConfigResourceBunch create(String key, Double priority, Map<String, ConfigResource> resources, Boolean refreshEnabled) {
         return new ConfigResourceBunch(key, priority, resources, refreshEnabled);
     }
 
-    public ConfigResourceBunch(String key, Double priority, List<Resource> resources, Boolean refreshEnabled) {
+    public ConfigResourceBunch(String key, Double priority, Map<String, ConfigResource> resources, Boolean refreshEnabled) {
         this.key = key;
         this.priority = priority;
         this.resources = resources;
@@ -69,7 +83,7 @@ public class ConfigResourceBunch implements PriorityComparable {
         return this.priority;
     }
 
-    public List<Resource> getResources() {
+    public Map<String, ConfigResource> getResources() {
         return this.resources;
     }
 
