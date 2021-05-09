@@ -18,7 +18,6 @@ package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.core.assist.CollectionAide;
 import com.lomcat.caramel.core.assist.MapAide;
-import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * 配置数据注册器，持有 caramel 配置数据
@@ -214,52 +212,6 @@ public class ConfigRegistry {
 
     public void setLocators(List<ConfigResourceLocator> locators) {
         this.locators = locators;
-    }
-
-    private void echoSummary_LoadFromLocalFiles(CaramelConfigEcho echo, StringBuilder builder, Object... args) {
-        if (echo.isEchoEnabled() && echo.isSummaryEnabled()) {
-            // 启用了 echo.summary，构建 summary 日志内容
-            builder.append(String.format("\tLoad CaramelConfig(%s) from local files...\n", args));
-        }
-    }
-
-    private void echoSummary_Resource(CaramelConfigEcho echo, StringBuilder builder, Object... args) {
-        if (echo.isEchoEnabled() && echo.isSummaryEnabled()) {
-            // 启用了 echo.summary，构建 summary 日志内容
-            builder.append(String.format("\t\tCaramelConfig(%s) <- %s\n", args));
-        }
-    }
-
-    private void echoTrack_NewConfig(CaramelConfigEcho echo, StringBuilder builder, String bunchKey, Config resourceConfig) {
-        if (echo.isEchoEnabled() && echo.isTrackEnabled()) {
-            // 启用了 echo.track， 构建 track 日志内容
-            resourceConfig.entrySet().forEach(entry ->
-                    builder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunchKey, entry.getKey(), entry.getValue().unwrapped())));
-        }
-    }
-
-    private void echoTrack_RenewConfig(CaramelConfigEcho echo, StringBuilder builder, String bunchKey, String propertyName, Object propertyValue, String oldName, Object oldValue) {
-        if (echo.isEchoEnabled() && echo.isTrackEnabled()) {
-            // 启用了 echo.track， 构建 track 日志内容
-            if (oldName != null) {
-                builder.append(String.format("\t\t\tRenew property into CaramelConfig(%s) <- %s=%s (Replace: %s=%s)\n", bunchKey, propertyName, propertyValue, oldName, oldValue));
-            } else {
-                builder.append(String.format("\t\t\tNew property into CaramelConfig(%s) <- %s=%s\n", bunchKey, propertyName, propertyValue));
-            }
-        }
-    }
-
-    private void echoContent(CaramelConfigEcho echo, StringBuilder builder, CaramelConfig caramelConfig) {
-        if (echo.isEchoEnabled() && echo.isContentEnabled()) {
-            // 启用了 echo.content， 构建 content 日志内容
-            if (caramelConfig != null) {
-                // 排序
-                List<String> lines = caramelConfig.content().entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().unwrapped() + "\n").sorted().collect(Collectors.toList());
-
-                builder.append(String.format("\tContent of CaramelConfig(%s):\n", caramelConfig.getKey()));
-                lines.forEach(line -> builder.append("\t\t").append(line));
-            }
-        }
     }
 
 }
