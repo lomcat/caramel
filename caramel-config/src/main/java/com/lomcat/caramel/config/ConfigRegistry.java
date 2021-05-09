@@ -16,21 +16,18 @@
 
 package com.lomcat.caramel.config;
 
-import com.lomcat.caramel.config.exception.ConfigLoadException;
 import com.lomcat.caramel.core.assist.CollectionAide;
 import com.lomcat.caramel.core.assist.MapAide;
-import com.lomcat.caramel.core.assist.StringAide;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStreamReader;
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -72,6 +69,10 @@ public class ConfigRegistry {
         this.configHolder = new ConcurrentHashMap<>();
     }
 
+    void register(CaramelConfig config) {
+        this.configHolder.put(config.getKey(), config);
+    }
+
     /**
      * 获取指定 key 对应的配置数据
      *
@@ -97,12 +98,12 @@ public class ConfigRegistry {
 
     public void init() {
         if (!this.enabled) {
-            logger.debug("[Caramel.registry] Caramel config is not enabled.");
+            logger.debug("[Caramel.Registry] Caramel config is not enabled.");
             return;
         }
 
         if (CollectionAide.isEmpty(this.locators)) {
-            logger.debug("[Caramel] No caramel config locator.");
+            logger.debug("[Caramel.Registry] No caramel config locator.");
         }
 
         /*
@@ -119,94 +120,11 @@ public class ConfigRegistry {
         // 加载配置文件资源集
         Map<String, List<ConfigResourceBunch>> bunchesMap = loadResourceBunches(this.locators);
         if (MapAide.isEmpty(bunchesMap)) {
-            logger.debug("[Caramel] No config resource.");
+            logger.debug("[Caramel.Registry] No config resource.");
             return;
         }
 
-        CaramelConfigEcho echo = this.echo != null ? this.echo : new CaramelConfigEcho();
-
-        bunchesMap.forEach((key, resourceBunches) -> {
-
-            StringBuilder echoBuilder = new StringBuilder(String.format("[Caramel] Echo config resource loading process for key '%s'...\n", key));
-
-            echoSummary_LoadFromLocalFiles(echo, echoBuilder, key); // echo summary
-
-            // 根据优先级从小到大排序
-            Collections.sort(resourceBunches);
-
-            AtomicReference<Config> keyConfig = new AtomicReference<>();
-            resourceBunches.forEach(bunch -> {
-                // 加载合并同一个 bunch 中的多个 resource
-                List<ConfigResource> resources = new ArrayList<>(bunch.getResources().values());
-                Collections.sort(resources); // 根据优先级排序
-                resources.forEach(resource -> {
-                    echoSummary_Resource(echo, echoBuilder, bunch.getKey(), resource); // echo summary
-
-                    try {
-                        System.out.println("========================");
-                        String resourceHashValue = resource.getHashValue();
-                        System.out.println("<<" + resource + "== HashValue == " + resourceHashValue + ">>");
-                        System.out.println("========================");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
-                        Config resourceConfig = ConfigFactory.parseReader(reader);
-                        if (keyConfig.get() == null) {
-                            echoTrack_NewConfig(echo, echoBuilder, bunch.getKey(), resourceConfig); // echo track
-
-                            keyConfig.set(resourceConfig);
-                        } else {
-                            resourceConfig.entrySet().forEach(entry -> {
-                                String existedPropertyName = null;
-                                Object existedPropertyValue = null;
-                                if (isMapKebabCamelCase()) {
-                                    // 如果否开启了串型和驼峰命名的映射
-                                    String newPropertyNameForEqual = entry.getKey().replace("-", "").toLowerCase();
-                                    for (Map.Entry<String, ConfigValue> property : keyConfig.get().entrySet()) {
-                                        String propertyNameForEqual = property.getKey().replace("-", "").toLowerCase();
-                                        if (StringAide.equals(newPropertyNameForEqual, propertyNameForEqual)) {
-                                            existedPropertyName = property.getKey();
-                                            existedPropertyValue = property.getValue().unwrapped();
-                                        }
-                                    }
-                                    if (existedPropertyName != null) {
-                                        keyConfig.set(keyConfig.get().withValue(existedPropertyName, entry.getValue()));
-                                    } else {
-                                        keyConfig.set(keyConfig.get().withValue(entry.getKey(), entry.getValue()));
-                                    }
-                                } else {
-                                    if (keyConfig.get().hasPath(entry.getKey())) {
-                                        existedPropertyName = entry.getKey();
-                                        existedPropertyValue = keyConfig.get().getValue(existedPropertyName).unwrapped();
-                                    }
-                                    keyConfig.set(keyConfig.get().withValue(entry.getKey(), entry.getValue()));
-                                }
-
-                                echoTrack_RenewConfig(echo, echoBuilder, bunch.getKey(), entry.getKey(), entry.getValue().unwrapped(), existedPropertyName, existedPropertyValue); // echo track
-                            });
-
-                        }
-                    } catch (Exception e) {
-                        throw new ConfigLoadException(String.format("[Caramel] config file read error: %s", resource), e);
-                    }
-                });
-            });
-
-            // 添加配置数据到注册表
-            configHolder.put(key, new CaramelConfig(key, keyConfig.get()));
-
-            echoContent(echo, echoBuilder, configHolder.get(key)); // echo content
-
-            if (echo.isEchoEnabled()) {
-                // 启用了 echo.summary,track,content 任意一个，输出到日志
-                echo.echo(echoBuilder.toString());
-            }
-
-        });
-
-
+        ConfigResourceLoader.create(this, bunchesMap, this.echo).load();
 
         /*
         TODO-Kweny 重写 Resource 对象，解除对 spring-core.io 的依赖
