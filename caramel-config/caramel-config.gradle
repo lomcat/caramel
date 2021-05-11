@@ -1,7 +1,7 @@
 description = 'Caramel Config'
 
 dependencies {
-    api project(':caramel-core')
+    implementation project(':caramel-core')
 
     implementation 'com.typesafe:config:' + project.DependencyVersions.typesafe_config
 }

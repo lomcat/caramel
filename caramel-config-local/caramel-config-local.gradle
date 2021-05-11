@@ -1,6 +1,6 @@
 description = 'Caramel Config for Local File System'
 
 dependencies {
-    api project(':caramel-core')
+    implementation project(':caramel-core')
     api project(':caramel-config')
 }
