@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * <p>
- *     包装配置文件资源，携带唯一标识 key 和优先级 priority，实现 Comparable 接口根据 priority 从小到大排序。
+ *     配置资源组，包装配置文件资源，携带唯一标识 key 和优先级 priority，实现 Comparable 接口根据 priority 从小到大排序。
  * </p>
  *
  * <p>
@@ -32,8 +32,8 @@ import java.util.Map;
  * </p>
  *
  * <p>
- *     当每个 {@link ConfigResourceBunch} 中的多个文件资源合并完成后，将作为一个完整的“配置文件集”，其具有 key 和 priority。
- *     之后将同 key 的“配置文件集”根据指定优先级 priority 再次进行合并，
+ *     当每个 {@link ConfigResourceBunch} 中的多个文件资源合并完成后，将作为一个完整的“配置文件组”，其具有 key 和 priority。
+ *     之后将同 key 的“配置文件组”根据指定优先级 priority 再次进行合并，
  *     此时一个唯一 key 所标识的完整配置数据 {@link CaramelConfig} 才算加载完成。
  * </p>
  *

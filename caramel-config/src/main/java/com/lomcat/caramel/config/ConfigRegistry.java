@@ -16,16 +16,14 @@
 
 package com.lomcat.caramel.config;
 
+import com.lomcat.caramel.config.listener.ConfigListener;
 import com.lomcat.caramel.core.assist.CollectionAide;
 import com.lomcat.caramel.core.assist.MapAide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -58,6 +56,8 @@ public class ConfigRegistry {
 
     /** 配置资源定位器 */
     private List<ConfigResourceLocator> locators;
+
+    private List<ConfigListener> listeners;
 
     /** 配置数据注册表，结构为 < key, config > */
     private final Map<String, CaramelConfig> configHolder;
@@ -122,7 +122,7 @@ public class ConfigRegistry {
             return;
         }
 
-        ConfigResourceLoader.create(this, bunchesMap, this.echo).load();
+        ConfigResourceLoader.create(this, bunchesMap, this.echo, this.listeners).load();
 
         /*
         TODO-Kweny 重写 Resource 对象，解除对 spring-core.io 的依赖
@@ -204,6 +204,24 @@ public class ConfigRegistry {
 
     public void setMapKebabCamelCase(boolean mapKebabCamelCase) {
         this.mapKebabCamelCase = mapKebabCamelCase;
+    }
+
+    public List<ConfigListener> getListeners() {
+        return listeners;
+    }
+
+    public void setListeners(List<ConfigListener> listeners) {
+        this.listeners = listeners;
+    }
+
+    public void addListener(ConfigListener listener) {
+        if (listener == null) {
+            return;
+        }
+        if (this.listeners == null) {
+            this.listeners = new ArrayList<>();
+        }
+        this.listeners.add(listener);
     }
 
     public List<ConfigResourceLocator> getLocators() {

@@ -17,6 +17,7 @@
 package com.lomcat.caramel.config;
 
 import com.lomcat.caramel.config.exception.ConfigLoadException;
+import com.lomcat.caramel.config.listener.ConfigListener;
 import com.lomcat.caramel.core.assist.StringAide;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -35,18 +36,20 @@ import java.util.stream.Collectors;
  */
 class ConfigResourceLoader {
 
-    static ConfigResourceLoader create(ConfigRegistry registry, Map<String, List<ConfigResourceBunch>> bunchesMap, CaramelConfigEcho echo) {
-        return new ConfigResourceLoader(registry, bunchesMap, echo);
+    static ConfigResourceLoader create(ConfigRegistry registry, Map<String, List<ConfigResourceBunch>> bunchesMap, CaramelConfigEcho echo, List<ConfigListener> listeners) {
+        return new ConfigResourceLoader(registry, bunchesMap, echo, listeners);
     }
 
     private final ConfigRegistry registry;
     private final Map<String, List<ConfigResourceBunch>> bunchesMap;
     private final CaramelConfigEcho echo;
+    private final List<ConfigListener> listeners;
 
-    ConfigResourceLoader(ConfigRegistry registry, Map<String, List<ConfigResourceBunch>> bunchesMap, CaramelConfigEcho echo) {
+    ConfigResourceLoader(ConfigRegistry registry, Map<String, List<ConfigResourceBunch>> bunchesMap, CaramelConfigEcho echo, List<ConfigListener> listeners) {
         this.registry = registry;
         this.bunchesMap = bunchesMap;
         this.echo = echo != null ? echo : new CaramelConfigEcho();
+        this.listeners = listeners;
     }
 
     void load() {
@@ -58,7 +61,9 @@ class ConfigResourceLoader {
             for 外层 指定 优先级 从低到高 {
                 for 内层 约定 优先级 从低到高
             }
-        最终 后加载的高优先级项 将覆盖 先加载的低优先级项
+        最终 后加载的高优先级配置项 将覆盖 先加载的低优先级配置项
+
+        串型-驼峰命名映射：当新项和旧项的名称去除分隔符并忽略大小写后相等，则使用新项目的 名和值 替换旧项
          */
 
         bunchesMap.forEach((key, bunches) -> {
@@ -69,11 +74,11 @@ class ConfigResourceLoader {
             __echo_Summary_LoadFromResources(echoBuilder, key);
 
             AtomicReference<Config> keyConfig = new AtomicReference<>(); // 当前 Key 的 Config
-            bunches.forEach(bunch -> {
+            bunches.forEach(bunch -> { // bunch：某key下的某个bunch
                 List<ConfigResource> resources = new ArrayList<>(bunch.getResources().values());
                 Collections.sort(resources);
 
-                resources.forEach(resource -> {
+                resources.forEach(resource -> { // resource：当前bunch下的一个resource
                     __echo_Summary_Resource(echoBuilder, bunch.getKey(), resource);
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
@@ -82,7 +87,7 @@ class ConfigResourceLoader {
                             keyConfig.set(resourceConfig);
                             __echo_Track_NewConfig(echoBuilder, bunch.getKey(), resourceConfig);
                         } else {
-                            resourceConfig.entrySet().forEach(entry -> {
+                            resourceConfig.entrySet().forEach(entry -> { // resourceConfig：当前resource对应的配置数据；entry：当前配置数据中的一个配置项
                                 String existedPropertyName = null;
                                 Object existedPropertyValue = null;
                                 if (this.registry.isMapKebabCamelCase()) {

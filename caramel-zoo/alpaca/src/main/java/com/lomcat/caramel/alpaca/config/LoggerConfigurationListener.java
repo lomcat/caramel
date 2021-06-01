@@ -22,8 +22,10 @@ import org.apache.logging.log4j.core.LoggerContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 
 /**
  * @author Kweny
@@ -52,4 +54,15 @@ public class LoggerConfigurationListener implements ServletContextListener {
 
     }
 
+    public static void main(String[] args) {
+        try (InputStreamReader reader = new InputStreamReader(LoggerConfigurationListener.class.getResourceAsStream("/config/alpaca-druid.conf"))) {
+            Properties props = new Properties();
+            props.load(reader);
+            props.forEach((key, value) -> {
+                System.out.println(key + " == " + value);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
