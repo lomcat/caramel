@@ -16,6 +16,8 @@
 
 package com.lomcat.caramel.config;
 
+import com.lomcat.caramel.core.assist.CollectionAide;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +35,7 @@ class _CaramelConfigCache {
     // 初级缓存 < key, <name, bunch> >
     private static final Map<String, Map<String, _CachedConfigBunch>> INITIAL_CACHE = new ConcurrentHashMap<>();
     private static final ReentrantReadWriteLock INITIAL_CACHE_LOCK = new ReentrantReadWriteLock();
-    private static final Set<String> CHANGED_KEYS = new HashSet<>();
+    private static final Set<String> INITIAL_CHANGED_KEYS = new HashSet<>();
 
     // 终级缓存
     private static final Map<String, CaramelConfig> FINAL_CACHE = new ConcurrentHashMap<>();
@@ -44,13 +46,23 @@ class _CaramelConfigCache {
         try {
             Map<String, _CachedConfigBunch> bunchMap = INITIAL_CACHE.computeIfAbsent(bunch.getKey(), key -> new ConcurrentHashMap<>());
             bunchMap.put(bunch.getName(), bunch);
-            CHANGED_KEYS.add(bunch.getKey());
+            INITIAL_CHANGED_KEYS.add(bunch.getKey());
         } finally {
             INITIAL_CACHE_LOCK.writeLock().unlock();
         }
     }
 
     static void refreshFinalCache() {
-        CHANGED_KEYS.clear();
+        INITIAL_CACHE_LOCK.readLock().lock();
+        try {
+            if (CollectionAide.isNotEmpty(INITIAL_CHANGED_KEYS)) {
+                for (String initialChangedKey : INITIAL_CHANGED_KEYS) {
+                    Map<String, _CachedConfigBunch> bunchMap = INITIAL_CACHE.get(initialChangedKey);
+                }
+                INITIAL_CHANGED_KEYS.clear();
+            }
+        } finally {
+            INITIAL_CACHE_LOCK.readLock().unlock();
+        }
     }
 }
