@@ -56,6 +56,7 @@ import java.util.Map;
  */
 public class ConfigResourceBunch implements PriorityComparable {
     private final String key;
+    private final String name;
     private final Double priority;
 //    private final List<ConfigResource> resources;
     private final Map<String, ConfigResource> resources;
@@ -63,12 +64,13 @@ public class ConfigResourceBunch implements PriorityComparable {
 
     private double softPriority;
 
-    public static ConfigResourceBunch create(String key, Double priority, Map<String, ConfigResource> resources, Boolean refreshEnabled) {
-        return new ConfigResourceBunch(key, priority, resources, refreshEnabled);
+    public static ConfigResourceBunch create(String key, String name, Double priority, Map<String, ConfigResource> resources, Boolean refreshEnabled) {
+        return new ConfigResourceBunch(key, name, priority, resources, refreshEnabled);
     }
 
-    public ConfigResourceBunch(String key, Double priority, Map<String, ConfigResource> resources, Boolean refreshEnabled) {
+    public ConfigResourceBunch(String key, String name, Double priority, Map<String, ConfigResource> resources, Boolean refreshEnabled) {
         this.key = key;
+        this.name = name;
         this.priority = priority;
         this.resources = resources;
         this.refreshEnabled = refreshEnabled;
@@ -76,6 +78,10 @@ public class ConfigResourceBunch implements PriorityComparable {
 
     public String getKey() {
         return this.key;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

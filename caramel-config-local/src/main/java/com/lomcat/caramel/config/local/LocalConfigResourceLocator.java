@@ -208,7 +208,7 @@ public class LocalConfigResourceLocator implements ConfigResourceLocator {
                 // 根据路径和扩展名查找配置资源
                 Map<String, ConfigResource> resources = resolveResources(position.getName(), paths, extensions);
                 if (MapAide.isNotEmpty(resources)) {
-                    ConfigResourceBunch bunch = ConfigResourceBunch.create(position.getKey(), position.getPriority(), resources, position.getRefreshEnabled());
+                    ConfigResourceBunch bunch = ConfigResourceBunch.create(position.getKey(), position.getName(), position.getPriority(), resources, position.getRefreshEnabled());
                     List<ConfigResourceBunch> cachedBunches = bunchesMap.computeIfAbsent(bunch.getKey(), k -> new ArrayList<>());
                     cachedBunches.add(bunch);
                 }
